@@ -1,0 +1,43 @@
+/* compiler.css */
+
+body
+{
+	background-color: #909193;
+	background-image: url(images/background.png);
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	font-size: 10pt;
+	font-weight: normal;
+	font-style: normal;
+}
+
+h1 
+{ 
+    color: white;
+	font-size:   20pt;
+	font-weight: normal;
+	font-style: normal;	
+}
+
+h2
+{
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	font-size:   16pt;
+	font-weight: normal;
+	font-style: normal;	
+}
+
+.center {
+    
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.whiteText {
+	color:white;
+}
+
+.button {
+	width: 100px;
+}
+
