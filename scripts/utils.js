@@ -42,3 +42,7 @@ function rot13(str)     // An easy-to understand implementation of the famous an
     }
     return retVal;
 }
+
+function putWarning(warning){
+    
+}

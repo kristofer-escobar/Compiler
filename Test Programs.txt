@@ -1,0 +1,22 @@
+Test Program 1:
+
+// Prints helloworld.
+
+char b
+char c
+b = "hello"
+c = "world"
+P(b)
+{
+P(c)
+}
+$
+
+// Prints sum of x and y. (15)
+
+int x
+int y
+x = 5
+y = 10
+P(x + y)
+$

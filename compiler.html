@@ -3,6 +3,7 @@
 <head>
     <title>Compiler By Kristofer Escobar</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <script src="libraries/jquery-1.9.1.min.js"></script>
     <link rel="stylesheet" type="text/css" href="compiler.css" />
 </head>
 <body onload="init();">
@@ -25,15 +26,11 @@
 
     <!-- Client-side code down here, per the YSlow advice. 
     // (http://developer.yahoo.com/performance/rules.html#js_bottom) -->
+    <script type="text/javascript" src="scripts/globals.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>	
     <script type="text/javascript" src="scripts/lexer.js"></script>	
     <script type="text/javascript">
-    // Global variables
-    var tokens = "";
-    var tokenIndex = 0;
-    var currentToken = "";
-    var errorCount = 0;
-    var EOF = "$";
+
 
     function init()
     {
