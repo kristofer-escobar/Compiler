@@ -42,7 +42,18 @@ function rot13(str)     // An easy-to understand implementation of the famous an
     }
     return retVal;
 }
+function putMessage(msg, line, position){
+    document.getElementById("taOutput").value += msg + "\n";
+    }
+    
+function putErrorMessage(msg, line, position){
+    document.getElementById("taOutput").value += "ERROR: Line " + line + " Position " + position + " :" + msg + "\n";
+
+    errorCount = errorCount + 1;
+    }
 
 function putWarning(warning){
-    
+    document.getElementById("taOutput").value += "Warning: Line " + line + " Position " + position + " :" + msg + "\n";
+
+    warningCount = warningCount + 1;
 }
