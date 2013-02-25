@@ -18,30 +18,6 @@ function trim(str)      // Use a regular expression to remove leading and traili
 	
 }
 
-function rot13(str)     // An easy-to understand implementation of the famous and common Rot13 obfuscator.
-{                       // You can do this in three lines with a complex regular experssion, but I'd have
-    var retVal = "";    // trouble explaining it in the future.  There's a lot to be said for obvious code.
-    for (var i in str)
-    {
-        var ch = str[i];
-        var code = 0;
-        if ("abcedfghijklmABCDEFGHIJKLM".indexOf(ch) >= 0)
-        {
-            code = str.charCodeAt(i) + 13;  // It's okay to use 13.  It's not a magic number, it's called rot13.
-            retVal = retVal + String.fromCharCode(code);
-        }
-        else if ("nopqrstuvwxyzNOPQRSTUVWXYZ".indexOf(ch) >= 0)
-        {
-            code = str.charCodeAt(i) - 13;  // It's okay to use 13.  See above.
-            retVal = retVal + String.fromCharCode(code);
-        }
-        else
-        {
-            retVal = retVal + ch;
-        }
-    }
-    return retVal;
-}
 function putMessage(msg, line, position){
     document.getElementById("taOutput").value += msg + "\n";
     }
@@ -56,4 +32,85 @@ function putWarning(warning){
     document.getElementById("taOutput").value += "Warning: Line " + line + " Position " + position + " :" + msg + "\n";
 
     warningCount = warningCount + 1;
+}
+
+
+function checkLexicon(key)
+{
+    key = key.toUpperCase();
+
+    for(var i in lexicon)
+    {
+        if(i == key)
+        {
+            // If found return the value for the corresponding key.
+            //alert(lexicon[key]);
+            return lexicon[key];
+        }
+    }
+
+    return null;
+}
+
+function isChar(chr)
+{
+    return (/^[a-z]$/).test(chr);
+}
+
+function isDigit(chr)
+{
+    return (/^\d$/).test(chr);
+}
+
+function checkForEOF(array)
+{
+    for(var i = 0; i < array.length; i++)
+    {
+        if(array[i].indexOf(EOF) != -1)
+        {
+            return i + 1;
+        }
+    }
+
+    return -1;
+}
+
+function getTokenValues(tokens)
+{
+//debugger;
+    var tokenString ="";
+
+    for(var i = 0; i< tokens.length; i++)
+    {
+        tokenString = tokenString + tokens[i].value + " ";
+    }
+
+    return tokenString;
+}
+
+function getTokenKinds(tokens)
+{
+//debugger;
+    var tokenString ="";
+
+    for(var i = 0; i< tokens.length; i++)
+    {
+        tokenString = tokenString + tokens[i].kind + " ";
+    }
+
+    return tokenString;
+}
+
+
+function getNextCharacter(line, startPosition)
+{
+    var i = 1;
+
+    while(line.slice(startPosition, startPosition + i) == " ")
+    {
+        i = i + 1;
+    }
+
+    return line.slice(startPosition, startPosition + i);
+
 }

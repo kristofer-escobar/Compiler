@@ -9,10 +9,27 @@
 <body onload="init();">
     <span class="center"><h1><i class="whiteText">Kris' Compiler Project</i></h1></span>
     <pre class="whiteText">
-                                                    G ::== E
-                                                    E ::== D O E | D
-                                                    D ::== 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0
-                                                    O ::== + | -
+                                                    Program       ::== Statement $
+                                                    Statement     ::== P ( Expr ) 
+                                                                  ::== Id = Expr
+                                                                  ::== VarDecl
+                                                                  ::== { StatementList }
+                                                    StatementList ::== Statement StatementList 
+                                                                  ::== ε
+                                                    Expr          ::== IntExpr
+                                                                  ::== CharExpr
+                                                                  ::== Id
+                                                    IntExpr       ::== digit op Expr
+                                                                  ::== digit
+                                                    CharExpr      ::== " CharList " CharList 
+                                                                  ::== Char CharList
+                                                                  ::== ε VarDecl 
+                                                                  ::== Type Id
+                                                    Type          ::== int | char
+                                                    Id            ::== Char
+                                                    Char          ::== a | b | c ... z
+                                                    digit         ::== 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 
+                                                    op            ::== + | -
     </pre>  
     <div class="center">
         <textarea id="taSourceCode" cols="82" rows="18" placeholder="Enter source code here."></textarea>
@@ -26,6 +43,7 @@
 
     <!-- Client-side code down here, per the YSlow advice. 
     // (http://developer.yahoo.com/performance/rules.html#js_bottom) -->
+    <script type="text/javascript" src="scripts/token.js"></script>
     <script type="text/javascript" src="scripts/globals.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>	
     <script type="text/javascript" src="scripts/lexer.js"></script>	
@@ -52,9 +70,11 @@
         putMessage("Compilation Started");
         // Grab the tokens from the lexer . . .
         tokens = lex();
-        putMessage("Lex returned [" + tokens + "]");
+        alert(getTokenKinds(tokens));
+        var tokenString = getTokenValues(tokens);
+        putMessage("Lex returned [" + tokenString + "]");
         // . . . and parse!
-        parse();
+        //parse();
     }
     
     function parse()
