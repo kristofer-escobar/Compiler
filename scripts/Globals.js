@@ -89,10 +89,13 @@ var smallTest4 ='';
 var smallTest5 ='} { 5 6 b = ( int';
 
 //Test a lex error.
-var smallTest6 = '{ a5 = "h"';
+var smallTest6 = '{ a5 = "h"\n}';
 
 //Test a parse error.
 var smallTest7 = '{ int int a\n{ a 5\n}\n}';
+
+// Test only curly braces.
+var smallTest8 = '{ { } }';
 
 /***********************
  * SYMBOL TABLE - store the values of all the identifiers.

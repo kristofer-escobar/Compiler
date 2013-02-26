@@ -11,6 +11,10 @@
         // A valid parse derives the G(oal) production, so begin there.
         parseStatement();
 
+        if(verboseMode)
+		{
+			putMessage("Creating symbol table.");
+		}
         createSymbolTable();
 
         // Report the results.
@@ -21,18 +25,30 @@
     {
 		if(currentToken.kind == TOKEN_PRINT)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing Print.");
+			}
 			parsePrint();
 		}
 		else if(currentToken.kind == TOKEN_IDENTIFIER)
 		{
 			var idStart = currentToken.position;
 
+			if(verboseMode)
+			{
+				putMessage("Parsing Identifier.");
+			}
 			parseId();
 
 			tokenValueStart = tokenIndex;
 
 			match(TOKEN_EQUAL_SIGN);
 
+			if(verboseMode)
+			{
+				putMessage("Parsing expression.");
+			}
 			parseExpr();
 
 			tokenValueEnd = tokenIndex;
@@ -41,6 +57,10 @@
 
 			varValues[idName] = tokenContent;
 
+			if(verboseMode)
+			{
+				putMessage("Checking for undeclared variables.");
+			}
 			if(!checkVars())
 			{
 				putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
@@ -50,11 +70,19 @@
 		}
 		else if(currentToken.kind == TOKEN_TYPE)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing Variable declaration.");
+			}
 			parseVarDecl();
 		}
 		else if(currentToken.kind == TOKEN_OPEN_CURLY_BRACE)
 		{
 			match(TOKEN_OPEN_CURLY_BRACE);
+			if(verboseMode)
+			{
+				putMessage("Parsing statement list.");
+			}
 			parseStatementList();
 //debugger;
 			match(TOKEN_CLOSE_CURLY_BRACE);
@@ -71,7 +99,16 @@
 //debugger;
 		if(currentToken.kind !== EOF && currentToken.kind !== TOKEN_CLOSE_CURLY_BRACE)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing statement.");
+			}
 			parseStatement();
+
+			if(verboseMode)
+			{
+				putMessage("Parsing statement list.");
+			}
 			parseStatementList();
 		}
     }
@@ -80,6 +117,10 @@
     {
 		match(TOKEN_PRINT);
 		match(TOKEN_OPEN_PARENTHESIS);
+		if(verboseMode)
+		{
+				putMessage("Parsing expression.");
+		}
 		parseExpr();
 		match(TOKEN_CLOSE_PARENTHESIS);
     }
@@ -89,14 +130,26 @@
 //debugger;
 		if(currentToken.kind == TOKEN_DIGIT)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing Int expression.");
+			}
 			parseIntExpr();
 		}
 		else if(currentToken.kind == TOKEN_QUOTE)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing Char expression.");
+			}
 			parseCharExpr();
 		}
 		else if(currentToken.kind == TOKEN_IDENTIFIER)
 		{
+			if(verboseMode)
+			{
+				putMessage("Parsing Identifier.");
+			}
 			parseId();
 		}
 		else
@@ -112,6 +165,10 @@
 		{
 			match(TOKEN_DIGIT);
 			match(TOKEN_OP);
+			if(verboseMode)
+			{
+				putMessage("Parsing expression.");
+			}
 			parseExpr();
 		} 
 		else 
@@ -137,6 +194,10 @@
     {
 		idType = currentToken.value;
 		match(TOKEN_TYPE);
+		if(verboseMode)
+		{
+			putMessage("Parsing Identifier.");
+		}
 		parseId();
 		varTypes[idName] = idType;
     }

@@ -8,11 +8,14 @@ function init()
 {
         // Clear the message box.
         document.getElementById("taOutput").value = "";
+        document.getElementById("taSymbolTable").value = "";
         // Set the initial values for our globals.
         tokens = "";
         tokenIndex = 0;
         currentToken = ' ';
         errorCount = 0;
+        warningCount = 0;
+        idAddr = 0;
 }
 
 function trim(str)      // Use a regular expression to remove leading and trailing spaces.

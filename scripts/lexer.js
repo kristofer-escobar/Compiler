@@ -6,7 +6,7 @@
         var sourceCode = $("#taSourceCode").val();
 
         // Set the default test program. (For Testing purposes only.)
-		sourceCode = smallTest7;
+		//sourceCode = smallTest2;
 
         // Trim the leading and trailing spaces.
         sourceCode = trim(sourceCode);
