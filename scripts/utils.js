@@ -195,6 +195,10 @@ function createSymbolTable()
         {
             idIsUsed = true;
         }
+        else
+        {
+            idIsUsed = false;
+        }
 
         addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
     }

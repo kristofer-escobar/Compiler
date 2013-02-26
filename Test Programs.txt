@@ -1,22 +1,48 @@
-Test Program 1:
+ // Test different types of expressions, variable 'a' never declared.
+{ a = "hello"
+{ P ( 5 + 6 )
+{ int b
+{ } } } }
 
-// Prints helloworld.
-
-char b
-char c
-b = "hello"
-c = "world"
-P(b)
-{
-P(c)
+// Introduces a reserved word inside a charList but still compiles.
+{ int c
+{ c = "int"
+{ char a
+{ a = " b "
+{ { }
 }
-$
+}
+}
+}
+}
 
-// Prints sum of x and y. (15)
+// Test use undeclared variable.
+a = " hello ""
 
-int x
-int y
-x = 5
-y = 10
-P(x + y)
-$
+// Test no source code
+
+//Test only passing lexer.
+} { 5 6 b = ( int
+
+//Test a lex error.
+{ a5 = "h" }
+
+//Test a parse error.
+{ int int a
+{ a 5
+}
+}
+
+// Test only curly braces.
+{ { } }
+
+
+// Test variable declared but never used.
+{ int c
+{
+c = "testing"
+{
+int a
+}
+}
+}
