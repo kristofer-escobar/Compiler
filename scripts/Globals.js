@@ -65,6 +65,10 @@ var idVisibility = "";
 var tokenValueStart = 0;
 
 var tokenValueEnd = 0;
+
+var varTypes = [];
+
+var varValues = [];
 /***********************
  * TEST PROGRAMS
  ***********************
@@ -102,15 +106,15 @@ var TOKEN_TYPE = "type";
 
 var TOKEN_QUOTE = "quote";
 
-var TOKEN_OPEN_CURLY_BRACE = "open curly brace";
+var TOKEN_OPEN_CURLY_BRACE = "open_curly_brace";
 
-var TOKEN_CLOSE_CURLY_BRACE = "close curly brace";
+var TOKEN_CLOSE_CURLY_BRACE = "close_curly_brace";
 
-var TOKEN_OPEN_PARENTHESIS = "open parenthesis";
+var TOKEN_OPEN_PARENTHESIS = "open_parenthesis";
 
-var TOKEN_CLOSE_PARENTHESIS = "close parenthesis";
+var TOKEN_CLOSE_PARENTHESIS = "close_parenthesis";
 
-var TOKEN_EQUAL_SIGN = "equal sign";
+var TOKEN_EQUAL_SIGN = "equal_sign";
 
 var TOKEN_EOF = "eof";
 

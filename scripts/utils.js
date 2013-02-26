@@ -164,7 +164,7 @@ function getSymbolTable()
 
     for(var i in symbolTable)
     {
-        symbolTableContents = symbolTableContents + "Name: " + i + ", Value: " + symbolTable[i].value + "\n";
+        symbolTableContents = symbolTableContents + "Name: " + i + "  Value: " + symbolTable[i].value + "  Type: " + symbolTable[i].type + "  Address: "+ symbolTable[i].address + "  isUsed: " + symbolTable[i].isUsed + "\n";
     }
 
     return symbolTableContents;
@@ -179,4 +179,19 @@ function getTokenContent(start, end)
         contents = contents + tokens[i].value;
     }
     return contents;
+}
+
+function createSymbolTable()
+{
+    //debugger;
+    for(var i in varTypes)
+    {
+        if(varValues[i] !== undefined)
+        {
+            idIsUsed = true;
+        }
+
+        addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
+    }
+
 }

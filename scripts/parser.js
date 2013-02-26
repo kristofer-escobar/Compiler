@@ -11,6 +11,8 @@
         // A valid parse derives the G(oal) production, so begin there.
         parseStatement();
 
+        createSymbolTable();
+
         // Report the results.
         putMessage("Parsing found " + errorCount + " error(s).");        
     }
@@ -35,7 +37,9 @@
 //debugger;
 			var tokenContent = getTokenContent(tokenValueStart, tokenValueEnd);
 
-			addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
+			varValues[idName] = tokenContent;
+
+			//addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
 		}
 		else if(currentToken.kind == TOKEN_TYPE)
 		{
@@ -124,8 +128,10 @@
 
     function parseVarDecl()
     {
+		idType = currentToken.value;
 		match(TOKEN_TYPE);
 		parseId();
+		varTypes[idName] = idType;
     }
 
     function match(expectedKind)
