@@ -2,17 +2,18 @@
 
     function lex()
     {
-        // Grab the source code.
+        // Get the source code.
         var sourceCode = $("#taSourceCode").val();
 
-        // Set the default test program.
-		sourceCode = smallTest;
+        // Set the default test program. (For Testing purposes only.)
+		sourceCode = smallTest2;
 
         // Trim the leading and trailing spaces.
         sourceCode = trim(sourceCode);
 
         // Check if there is source code.
-        if(sourceCode.length > 0){
+        if(sourceCode.length > 0)
+        {
 			// Check for the end of file symbol.
             if(sourceCode.indexOf(EOF) == -1)
             {
@@ -33,14 +34,15 @@
             // Find which line ends with the end of file symbol.
             var sourceEndPosition = checkForEOF(sourceLines);
 
-            // Iterate through each linePosition.
+            // Iterate through each line.
             for(var linePosition = 0; linePosition < sourceEndPosition; linePosition++)
             {
 //debugger;
-                // Store the current working linePosition.
+                // Store the current working line.
                 var currentLine = sourceLines[linePosition].trim();
 
-                tokenStartPosition = 0;
+                // Store the start position of the current lexeme.
+                lexemeStartPosition = 0;
 
                 // Iterate through the characters in the current linePosition.
                 for(var characterPosition = 0; characterPosition < currentLine.length; characterPosition++)
@@ -48,37 +50,15 @@
                     // Store the current working characterPosition.
                     var currentCharacter = currentLine[characterPosition];
 
-                    // Checking for Print character and if character before was a space.
-                    // if(currentCharacter == "P" && REGEX_SPACE.test(sourceLines[characterPosition - 1]))
-                    // {
-                    //     if(getNextCharacter(currentLine,characterPosition) == "(")
-                    //     {
-                    //         tokenize(TOKEN_PRINT,linePosition,characterPosition,currentCharacter);
-
-                    //         tokenStartPosition = tokenStartPosition + 1;
-
-                    //         continue;
-                    //     }
-                    // }
-
-                    // currentLexeme = checkLexicon(currentCharacter);
-                    // // Check if the current character is in the lexicon.
-                    // if(currentLexeme !== null)
-                    // {
-                    //     tokenize(tokenKind,linePosition,characterPosition,currentLexeme);
-                    //     tokenStartPosition = tokenStartPosition + 1;
-                    //     continue;
-                    // }
-
                     //Check for a delimiter.
-                    if(REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) ||currentCharacter == EOF)
+                    if(REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF)
                     {
-//debugger;  
+//debugger;
                         if(currentCharacter == EOF)// Reached end of file.
                         {
 //debugger;
                             // Get all characters in the current lexeme up to and including the eof symbol.
-                            currentLexeme = currentLine.slice(tokenStartPosition, currentLine.indexOf(EOF)+1);
+                            currentLexeme = currentLine.slice(lexemeStartPosition, currentLine.indexOf(EOF)+1);
 
                             // Check if the eof symbol is included with other lexemes.
                             if(currentLexeme.length > 1)
@@ -96,16 +76,15 @@
                         else if(REGEX_SPACE.test(currentCharacter))// Reached a whitespace.
                         {
                             // Get the current lexeme.
-                            currentLexeme = currentLine.slice(tokenStartPosition, characterPosition);
+                            currentLexeme = currentLine.slice(lexemeStartPosition, characterPosition);
                         }
                         else// Reached end of line.
                         {
 //debugger;
                             // Get the current lexeme.
-                            currentLexeme = currentLine.slice(tokenStartPosition, currentLine.length);
+                            currentLexeme = currentLine.slice(lexemeStartPosition, currentLine.length);
                         }
 //debugger;
-
                         // Check if the lexeme is in the lexicon.
                         var tokenKind = checkLexicon(currentLexeme);
 
@@ -116,15 +95,6 @@
                         }
                         else
                         {
-
-                            // if(currentLexeme.length > 0)
-                            // {
-                            //     //current lexeme may have an adjacent lexeme.
-                                
-                            //     //Check first character
-                            //     var firstChar = currentLexeme.slice(0,1);
-
-                            // }
                             if(isChar(currentLexeme))
                             {
                                 // Found a characer.
@@ -135,15 +105,16 @@
                                 // Found a digit.
                                 tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentLexeme);
                             }
-
                             else
                             {
-                                // Unknown lexme.
+                                // Unknown lexeme.
                                 putErrorMessage("Invalid token.",linePosition,characterPosition);
                             }
                         }
 
-                        tokenStartPosition = characterPosition + 1;
+                        // Increment lexeme start position.
+                        lexemeStartPosition = characterPosition + 1;
+
                         continue;
 
                     } // End Whitespace check.
@@ -157,10 +128,15 @@
 
                         // Save the position of the starting quote.
                         var startQuotePosition = characterPosition;
+
                         var endQuotePosition = 0;
 
                         // Create a token for a quote.
                         tokenize(TOKEN_QUOTE, linePosition, startQuotePosition, currentCharacter);
+
+
+
+                        
 
                         // Loop through the characters until the end quote is found.
                         while(isCharList && endQuotePosition != -1)
@@ -177,7 +153,7 @@
                                 if(currentLine.charAt(endQuotePosition - 1) !== "\\")
                                 {
                                     // End quote found, create charList token.
-                                    var charListValue = currentLine.slice(startQuotePosition + 1, endQuotePosition);
+                                    var charListValue = currentLine.slice(startQuotePosition + 1, endQuotePosition).trim();
                                     tokenize(TOKEN_CHARLIST,linePosition,characterPosition,charListValue);
 
                                     // Add the end quote token to token stream.
@@ -209,7 +185,7 @@
         else
         {
             // No Source code found.
-            putMessage("Error: No source code found.");
+            putMessage("ERROR: No source code found.");
         }
 
         // TODO: remove all spaces in the middle; remove linePosition breaks too.

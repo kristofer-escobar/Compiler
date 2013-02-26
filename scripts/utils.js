@@ -4,6 +4,17 @@
    Utility functions.
    -------- */
 
+function init()
+{
+        // Clear the message box.
+        document.getElementById("taOutput").value = "";
+        // Set the initial values for our globals.
+        tokens = "";
+        tokenIndex = 0;
+        currentToken = ' ';
+        errorCount = 0;
+}
+
 function trim(str)      // Use a regular expression to remove leading and trailing spaces.
 {
 	return str.replace(/^\s+ | \s+$/g, "");
@@ -18,17 +29,20 @@ function trim(str)      // Use a regular expression to remove leading and traili
 	
 }
 
-function putMessage(msg, line, position){
+function putMessage(msg, line, position)
+{
     document.getElementById("taOutput").value += msg + "\n";
-    }
+}
     
-function putErrorMessage(msg, line, position){
+function putErrorMessage(msg, line, position)
+{
     document.getElementById("taOutput").value += "ERROR: Line " + line + " Position " + position + " :" + msg + "\n";
 
     errorCount = errorCount + 1;
-    }
+}
 
-function putWarning(warning){
+function putWarning(warning)
+{
     document.getElementById("taOutput").value += "Warning: Line " + line + " Position " + position + " :" + msg + "\n";
 
     warningCount = warningCount + 1;
@@ -101,7 +115,6 @@ function getTokenKinds(tokens)
     return tokenString;
 }
 
-
 function getNextCharacter(line, startPosition)
 {
     var i = 1;
@@ -114,3 +127,16 @@ function getNextCharacter(line, startPosition)
     return line.slice(startPosition, startPosition + i);
 
 }
+
+function getNextToken()
+    {
+        var thisToken = EOF;    // Let's assume that we're at the EOF.
+        if (tokenIndex < tokens.length)
+        {
+            // If we're not at EOF, then return the next token in the stream and advance the index.
+            thisToken = tokens[tokenIndex];
+            putMessage("Current token:" + thisToken.value);
+            tokenIndex++;
+        }
+        return thisToken;
+    }

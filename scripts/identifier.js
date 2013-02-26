@@ -2,6 +2,9 @@
 * identifer.js
 */
 
+/*
+ * Identifier Object
+ */
 function Identifer () {
     this.name  = null;
     this.address  = -1;
@@ -13,6 +16,7 @@ function Identifer () {
     this.category = null;
     this.visibility = null;
 
+    // Function to create a identifer object.
     this.create = function(name, address, value, type, isUsed, scope, lifetime, category, visibility) {
     this.name  = name;
     this.address  = address;
@@ -27,6 +31,9 @@ function Identifer () {
 
 }
 
+/*
+ * Function to add an entry to the symbol table.
+ */
 function addToSymbolTable(name, address, value, type, isUsed, scope, lifetime, category, visibility){
 
 	var newIdentifer = new Identifer();

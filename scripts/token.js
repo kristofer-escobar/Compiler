@@ -10,7 +10,6 @@ function Token () {
         this.position = position;
         this.value = value;
     };
-
 }
 
 function tokenize(kind, line, position, value)
