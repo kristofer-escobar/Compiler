@@ -137,7 +137,7 @@ debugger;
 
                     } // End Whitespace check.
 
-                    // Checking for characterPosition lists (Strings).
+                    // Checking for character lists (Strings).
                     if(currentCharacter == '"')
                     {
 //debugger;
