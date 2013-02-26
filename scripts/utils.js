@@ -36,6 +36,8 @@ function putMessage(msg, line, position)
     
 function putErrorMessage(msg, line, position)
 {
+    errorsFound = true;
+
     document.getElementById("taOutput").value += "Error on line " + (line + 1) + " position " + position + ": " + msg + ".\n";
 
     errorCount = errorCount + 1;
@@ -194,4 +196,17 @@ function createSymbolTable()
         addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
     }
 
+}
+
+function checkVars()
+{
+    for(var i in varValues)
+    {
+        if(varTypes[i] === undefined)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -73,14 +73,26 @@ var varValues = [];
  * TEST PROGRAMS
  ***********************
  */
- // Test different types of expressions.
+ // Test different types of expressions, variable 'a' never declared.
 var smallTest1 = '{ a = "hello"\n{ P ( 5 + 6 )\n{ int b\n{ }\n}\n}\n}';
 
 // Introduces a reserved word inside a charList.
 var smallTest2 = '{ int c\n{ c = "int"\n{ char a\n{ a = " b "\n{ { }\n}\n}\n}\n}\n}';
 
-// Introduces EOF in the middle of the file.
+// Test use undeclared variable.
 var smallTest3 = 'a = " hello "';
+
+// Test no source code
+var smallTest4 ='';
+
+//Test only passing lexer.
+var smallTest5 ='} { 5 6 b = ( int';
+
+//Test a lex error.
+var smallTest6 = '{ a5 = "h"';
+
+//Test a parse error.
+var smallTest7 = '{ int int a\n{ a 5\n}\n}';
 
 /***********************
  * SYMBOL TABLE - store the values of all the identifiers.

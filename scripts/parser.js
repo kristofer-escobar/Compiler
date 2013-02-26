@@ -25,6 +25,8 @@
 		}
 		else if(currentToken.kind == TOKEN_IDENTIFIER)
 		{
+			var idStart = currentToken.position;
+
 			parseId();
 
 			tokenValueStart = tokenIndex;
@@ -38,6 +40,11 @@
 			var tokenContent = getTokenContent(tokenValueStart, tokenValueEnd);
 
 			varValues[idName] = tokenContent;
+
+			if(!checkVars())
+			{
+				putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
+			}
 
 			//addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
 		}
@@ -55,7 +62,7 @@
 		else
 		{
 			// Found unknown statement.
-			putErrorMessage("Unknown statement.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
+			putErrorMessage("Unknown statement", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 		}
     }
 
