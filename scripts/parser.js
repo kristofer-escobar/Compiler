@@ -24,8 +24,18 @@
 		else if(currentToken.kind == TOKEN_IDENTIFIER)
 		{
 			parseId();
+
+			tokenValueStart = tokenIndex;
+
 			match(TOKEN_EQUAL_SIGN);
+
 			parseExpr();
+
+			tokenValueEnd = tokenIndex;
+//debugger;
+			var tokenContent = getTokenContent(tokenValueStart, tokenValueEnd);
+
+			addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
 		}
 		else if(currentToken.kind == TOKEN_TYPE)
 		{
@@ -41,7 +51,7 @@
 		else
 		{
 			// Found unknown statement.
-			putMessage("ERROR: Unknown statement.");
+			putErrorMessage("Unknown statement.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 		}
     }
 
@@ -80,7 +90,7 @@
 		}
 		else
 		{
-			putMessage("PARSE ERROR: Unknown expression." );
+			putErrorMessage("Unknown expression.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 		}
     }
 
@@ -108,6 +118,7 @@
 
     function parseId()
     {
+		idName = currentToken.value;
 		match(TOKEN_IDENTIFIER);
     }
 
@@ -123,13 +134,12 @@
 
 		if(currentToken.kind == expectedKind)
 		{
-			putMessage("Got: " + currentToken.kind);
+			putMessage("Received: " + currentToken.kind);
 
-			putMessage("Getting next token.");
 			currentToken = getNextToken();
 		}
 		else
 		{
-			putMessage("ERROR: Expected a token of kind: " + expectedKind + " but got token of kind " + currentToken.kind + ".");
+			putErrorMessage("Expected a token of kind: " + expectedKind + " but got token of kind " + currentToken.kind + ".",currentToken.line, currentToken.position);
 		}
     }

@@ -36,18 +36,29 @@ function putMessage(msg, line, position)
     
 function putErrorMessage(msg, line, position)
 {
-    document.getElementById("taOutput").value += "ERROR: Line " + line + " Position " + position + " :" + msg + "\n";
+    document.getElementById("taOutput").value += "Error on line " + (line + 1) + " position " + position + ": " + msg + ".\n";
 
     errorCount = errorCount + 1;
 }
 
-function putWarning(warning)
+function putWarningMessage(msg, line, position)
 {
-    document.getElementById("taOutput").value += "Warning: Line " + line + " Position " + position + " :" + msg + "\n";
+    document.getElementById("taOutput").value += "Warning on line " + (line + 1) + " position " + position + ": " + msg + ".\n";
 
     warningCount = warningCount + 1;
 }
 
+function setErrorMode(mode)
+{
+    if(mode == 'verbose')
+    {
+        verboseMode = true;
+    }
+    else
+    {
+        verboseMode = false;
+    }
+}
 
 function checkLexicon(key)
 {
@@ -64,6 +75,11 @@ function checkLexicon(key)
     }
 
     return null;
+}
+
+function isCharList(chrLst)
+{
+    return (/[a-z]/).test(chrLst);
 }
 
 function isChar(chr)
@@ -133,6 +149,7 @@ function getNextToken()
         var thisToken = EOF;    // Let's assume that we're at the EOF.
         if (tokenIndex < tokens.length)
         {
+            putMessage("Getting next token.");
             // If we're not at EOF, then return the next token in the stream and advance the index.
             thisToken = tokens[tokenIndex];
             putMessage("Current token:" + thisToken.value);
@@ -140,3 +157,26 @@ function getNextToken()
         }
         return thisToken;
     }
+
+function getSymbolTable()
+{
+    var symbolTableContents = "";
+
+    for(var i in symbolTable)
+    {
+        symbolTableContents = symbolTableContents + "Name: " + i + ", Value: " + symbolTable[i].value + "\n";
+    }
+
+    return symbolTableContents;
+}
+
+function getTokenContent(start, end)
+{
+    var contents = "";
+
+    for(var i = start; i < (end-1); i++)
+    {
+        contents = contents + tokens[i].value;
+    }
+    return contents;
+}

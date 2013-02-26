@@ -32,17 +32,51 @@ var sourceLines = [];
 
 var charList = "";
 
-var isCharList = false;
+var charListValue = "";
+
+var startQuotePosition = 0;
+
+var endQuotePosition = 0;
+
+var inCharList = false;
 
 var errorsFound = false;
 
+var verboseMode = false;
+
+var idName = "";
+
+var idAddr = 0;
+
+var idValue = "";
+
+var idType = "";
+
+var idIsUsed = "";
+
+var idScope = "";
+
+var idLifetime = "";
+
+var idCategory = "";
+
+var idVisibility = "";
+
+var tokenValueStart = 0;
+
+var tokenValueEnd = 0;
 /***********************
  * TEST PROGRAMS
  ***********************
  */
-var smallTest = '{ a = "hello"\n{ P ( 5 + 6 )\n{ int b\n{ }\n}\n}\n}';
+ // Test different types of expressions.
+var smallTest1 = '{ a = "hello"\n{ P ( 5 + 6 )\n{ int b\n{ }\n}\n}\n}';
 
+// Introduces a reserved word inside a charList.
 var smallTest2 = '{ int c\n{ c = "int"\n{ char a\n{ a = " b "\n{ { }\n}\n}\n}\n}\n}';
+
+// Introduces EOF in the middle of the file.
+var smallTest3 = 'a = " hello "';
 
 /***********************
  * SYMBOL TABLE - store the values of all the identifiers.

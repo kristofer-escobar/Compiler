@@ -41,3 +41,18 @@ h2
 	width: 100px;
 }
 
+.buttons {
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	font-size: 10pt;
+    text-align: center;
+    padding: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mode {
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	font-size: 10pt;
+	color:white;
+}
+

@@ -6,7 +6,7 @@
         var sourceCode = $("#taSourceCode").val();
 
         // Set the default test program. (For Testing purposes only.)
-		sourceCode = smallTest2;
+		sourceCode = smallTest1;
 
         // Trim the leading and trailing spaces.
         sourceCode = trim(sourceCode);
@@ -14,28 +14,30 @@
         // Check if there is source code.
         if(sourceCode.length > 0)
         {
-			// Check for the end of file symbol.
+//debugger;
+            // Check for the end of file symbol.
             if(sourceCode.indexOf(EOF) == -1)
             {
                 // End of symbol was not found, but it will be added.
                 sourceCode = sourceCode + EOF;
-                putMessage("WARNING: EOF symbol not found, but has been added.");
-            }
 
-            // Check if the end of file symbol is at the end of the file.
-            if(sourceCode.indexOf(EOF) != sourceCode.length - 1)
-            {
-                putMessage("WARNING: All content after EOF symbol will be disregarded");
+                putWarningMessage("EOF symbol not found, but has been added.",0,0);
             }
 
             // Divide the source code into lines.
             sourceLines = sourceCode.split("\n");
-//debugger;
-            // Find which line ends with the end of file symbol.
-            var sourceEndPosition = checkForEOF(sourceLines);
+
+            // Find which line has the end of file symbol.
+            var lineEndPosition = checkForEOF(sourceLines);
+
+            // Check if the end of file symbol is at the end of the file.
+            if(sourceCode.indexOf(EOF) != sourceCode.length - 1)
+            {
+                putWarningMessage("All content after EOF symbol will be disregarded",(lineEndPosition-1), sourceLines[lineEndPosition-1].indexOf(EOF)+1);
+            }
 
             // Iterate through each line.
-            for(var linePosition = 0; linePosition < sourceEndPosition; linePosition++)
+            for(var linePosition = 0; linePosition < lineEndPosition; linePosition++)
             {
 //debugger;
                 // Store the current working line.
@@ -44,14 +46,23 @@
                 // Store the start position of the current lexeme.
                 lexemeStartPosition = 0;
 
+                // Store the value of the last character in the line.
+                var characterEndPosition = currentLine.length;
+
+                // Find the position of the EOF symbol.
+                if(linePosition == (lineEndPosition - 1))
+                {
+                    characterEndPosition = sourceLines[linePosition].indexOf(EOF) + 1;
+                }
+
                 // Iterate through the characters in the current linePosition.
-                for(var characterPosition = 0; characterPosition < currentLine.length; characterPosition++)
+                for(var characterPosition = 0; characterPosition < characterEndPosition; characterPosition++)
                 {
                     // Store the current working characterPosition.
                     var currentCharacter = currentLine[characterPosition];
 
                     //Check for a delimiter.
-                    if(REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF)
+                    if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList)
                     {
 //debugger;
                         if(currentCharacter == EOF)// Reached end of file.
@@ -120,59 +131,69 @@
                     } // End Whitespace check.
 
                     // Checking for character lists (Strings).
-                    if(currentCharacter == '"')
+                    if(currentCharacter == '"' || inCharList)
                     {
 //debugger;
-                        // character list found.
-                        isCharList = true;
-
-                        // Save the position of the starting quote.
-                        var startQuotePosition = characterPosition;
-
-                        var endQuotePosition = 0;
-
-                        // Create a token for a quote.
-                        tokenize(TOKEN_QUOTE, linePosition, startQuotePosition, currentCharacter);
-
-
-
-                        
-
-                        // Loop through the characters until the end quote is found.
-                        while(isCharList && endQuotePosition != -1)
+                        if(!inCharList)
                         {
-                            // Start search for the end quote after the open quote.
-                            endQuotePosition = currentLine.indexOf('"', startQuotePosition + 1);
+                            // character list found.
+                            inCharList = true;
 
-                            // Check if the end quote was found.
-                            if(endQuotePosition != -1)
+                            // Save the position of the starting quote.
+                             startQuotePosition = characterPosition;
+
+                            // Create a token for a quote.
+                            tokenize(TOKEN_QUOTE, linePosition, startQuotePosition, currentCharacter);
+
+                            // Check for end quote.
+                            if(currentLine.indexOf("\"", startQuotePosition + 1) == -1)
                             {
-                                // End quote found.
+                                inCharList = false;
+                                putErrorMessage("CharList is not properly closed by a double-quote",linePosition,characterPosition);
+                            }
 
-                                // Check if it's the end quote or an escape sequence.
-                                if(currentLine.charAt(endQuotePosition - 1) !== "\\")
+                            lexemeStartPosition = characterPosition + 1;
+
+                            continue;
+                        }
+
+                        while(inCharList)
+                        {
+                            if(currentCharacter == "\"")
+                            {
+                                inCharList = false;
+
+                                if(isCharList(charListValue))
                                 {
-                                    // End quote found, create charList token.
-                                    var charListValue = currentLine.slice(startQuotePosition + 1, endQuotePosition).trim();
-                                    tokenize(TOKEN_CHARLIST,linePosition,characterPosition,charListValue);
-
-                                    // Add the end quote token to token stream.
-                                    tokenize(TOKEN_QUOTE,linePosition,endQuotePosition,currentCharacter);
-
-                                    // End of charList.
-                                    isCharList = false;
+                                    // Add charList to token stream.
+                                    tokenize(TOKEN_CHARLIST, linePosition, startQuotePosition, charListValue);
+                                    charListValue = "";
                                 }
+                                else
+                                {
+                                    putErrorMessage("Invalid charList.",linePosition, characterPosition);
+                                }
+
+                                // Add end quote to token stream.
+                                tokenize(TOKEN_QUOTE, linePosition, startQuotePosition, currentCharacter);
+
+                                lexemeStartPosition = characterPosition + 1;
+
+                                continue;
                             }
-                            else
+
+                            if(currentCharacter !== " ")
                             {
-                                // Error, no end quote found.
-                                putMessage("ERROR: Unterminated string. Expected '\"'.");
+                                charListValue = charListValue + currentCharacter;
                             }
 
-                            // Set the characterPosition position to the end quote.
-                            characterPosition = endQuotePosition;
+                            // Move to the next character.
+                            characterPosition = characterPosition + 1;
+                            currentCharacter = currentLine[characterPosition];
 
-                        }// End end quote check.
+                        } // End of while.
+
+                        lexemeStartPosition = characterPosition + 1;
 
                         continue;
                     } // End Quote check.
@@ -185,7 +206,7 @@
         else
         {
             // No Source code found.
-            putMessage("ERROR: No source code found.");
+            putErrorMessage("No source code found.",0,0);
         }
 
         // TODO: remove all spaces in the middle; remove linePosition breaks too.

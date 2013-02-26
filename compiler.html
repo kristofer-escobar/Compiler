@@ -32,18 +32,29 @@
                                                     op            ::== + | -
     </pre>  
     <div class="center">
-        <textarea id="taSourceCode" cols="82" rows="18" placeholder="Enter source code here."></textarea>
+        <textarea id="taSourceCode" cols="82" rows="15" placeholder="Enter source code here."></textarea>
         <br>
+    </div>
+    <div class="buttons">
         <span class="whiteText">Click to compile.</span>
         <input type="button" id="btnCompile" class="button" value="Compile" onclick="btnCompile_click();"/>
-        <br>
-        <textarea id="taOutput" cols="82" rows="18" placeholder="Output will be shown here."></textarea>
+        <div class="mode">
+            Error Mode:
+            <input name="mode" value="standard" checked="checked" onclick="setErrorMode('standard');" type="radio" id="standard">Standard
+            <input name="mode" value="verbose" onclick="setErrorMode('verbose');" type="radio">Verbose
+        </div>
+    </div>
+    <div class="center">
+        <textarea id="taOutput" cols="82" rows="15" placeholder="Output will be shown here."></textarea>
+        <br><br>
+        <textarea id="taSymbolTable" cols="82" rows="10" placeholder="Symbol table will be shown here."></textarea>
     </div>
     <!-- Footer -->
 
     <!-- Client-side code down here, per the YSlow advice. 
     // (http://developer.yahoo.com/performance/rules.html#js_bottom) -->
     <script type="text/javascript" src="scripts/token.js"></script>
+    <script type="text/javascript" src="scripts/identifier.js"></script>
     <script type="text/javascript" src="scripts/globals.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>	
     <script type="text/javascript" src="scripts/lexer.js"></script>	
@@ -61,9 +72,25 @@
         tokens = lex();
         alert(getTokenKinds(tokens));
         var tokenString = getTokenValues(tokens);
-        putMessage("Lex returned [" + tokenString + "]");
+
+        putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
+        
         // . . . and parse!
-        parse();
+        if(!errorsFound)
+        {
+            putMessage("Lex returned [" + tokenString + "]");
+            parse();   
+
+            if(!errorsFound)
+            {
+                document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
+            }         
+        }
+        else
+        {
+            putMessage("Error, failed to parse due to lexical errors.");
+        }
+
     }
 
     </script>
