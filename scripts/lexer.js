@@ -36,8 +36,9 @@
             // Iterate through each linePosition.
             for(var linePosition = 0; linePosition < sourceEndPosition; linePosition++)
             {
+//debugger;
                 // Store the current working linePosition.
-                var currentLine = trim(sourceLines[linePosition]);
+                var currentLine = sourceLines[linePosition].trim();
 
                 tokenStartPosition = 0;
 
@@ -48,31 +49,31 @@
                     var currentCharacter = currentLine[characterPosition];
 
                     // Checking for Print character and if character before was a space.
-                    if(currentCharacter == "P" && REGEX_SPACE.test(sourceLines[characterPosition - 1]))
-                    {
-                        if(getNextCharacter(currentLine,characterPosition) == "(")
-                        {
-                            tokenize(TOKEN_PRINT,linePosition,characterPosition,currentCharacter);
+                    // if(currentCharacter == "P" && REGEX_SPACE.test(sourceLines[characterPosition - 1]))
+                    // {
+                    //     if(getNextCharacter(currentLine,characterPosition) == "(")
+                    //     {
+                    //         tokenize(TOKEN_PRINT,linePosition,characterPosition,currentCharacter);
 
-                            tokenStartPosition = tokenStartPosition + 1;
+                    //         tokenStartPosition = tokenStartPosition + 1;
 
-                            continue;
-                        }
-                    }
+                    //         continue;
+                    //     }
+                    // }
 
-                    currentLexeme = checkLexicon(currentCharacter);
-                    // Check if the current character is in the lexicon.
-                    if(currentLexeme !== null)
-                    {
-                        tokenize(tokenKind,linePosition,characterPosition,currentLexeme);
-                        tokenStartPosition = tokenStartPosition + 1;
-                        continue;
-                    }
+                    // currentLexeme = checkLexicon(currentCharacter);
+                    // // Check if the current character is in the lexicon.
+                    // if(currentLexeme !== null)
+                    // {
+                    //     tokenize(tokenKind,linePosition,characterPosition,currentLexeme);
+                    //     tokenStartPosition = tokenStartPosition + 1;
+                    //     continue;
+                    // }
 
                     //Check for a delimiter.
                     if(REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) ||currentCharacter == EOF)
                     {
-debugger;  
+//debugger;  
                         if(currentCharacter == EOF)// Reached end of file.
                         {
 //debugger;
@@ -110,21 +111,31 @@ debugger;
 
                         if(tokenKind !== null)
                         {
-                            //Founc in lexicon.
+                            //Found in lexicon.
                             tokenize(tokenKind,linePosition,characterPosition,currentLexeme);
                         }
                         else
                         {
+
+                            // if(currentLexeme.length > 0)
+                            // {
+                            //     //current lexeme may have an adjacent lexeme.
+                                
+                            //     //Check first character
+                            //     var firstChar = currentLexeme.slice(0,1);
+
+                            // }
                             if(isChar(currentLexeme))
                             {
                                 // Found a characer.
-                                tokenize(TOKEN_CHAR,linePosition,characterPosition,currentLexeme);
+                                tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentLexeme);
                             }
                             else if(isDigit(currentLexeme))
                             {
                                 // Found a digit.
                                 tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentLexeme);
                             }
+
                             else
                             {
                                 // Unknown lexme.
