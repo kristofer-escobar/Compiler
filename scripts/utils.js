@@ -198,6 +198,7 @@ function createSymbolTable()
         else
         {
             idIsUsed = false;
+            //putWarningMessage()
         }
 
         addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
@@ -216,4 +217,29 @@ function checkVars()
     }
 
     return true;
+}
+
+function isTerminal(){
+    for(var i in terminals)
+    {
+        if(i == key)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function getTerminal(){
+    for(var i in terminals)
+    {
+        if(i == key)
+        {
+            // If found return the value for the corresponding key.
+            return terinals[key];
+        }
+    }
+
+    return null;
 }

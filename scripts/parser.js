@@ -18,7 +18,7 @@
         createSymbolTable();
 
         // Report the results.
-        putMessage("Parsing found " + errorCount + " error(s).");        
+        putMessage("Parsing found " + errorCount + " error(s).");
     }
     
     function parseStatement()

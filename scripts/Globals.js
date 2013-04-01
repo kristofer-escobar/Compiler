@@ -97,6 +97,8 @@ var smallTest7 = '{ int int a\n{ a 5\n}\n}';
 // Test only curly braces.
 var smallTest8 = '{ { } }';
 
+var smallTest9 = 'P(2)$';
+
 /***********************
  * SYMBOL TABLE - store the values of all the identifiers.
  ***********************
@@ -141,4 +143,5 @@ var TOKEN_OP = "operator";
 */
 var lexicon = {"INT":TOKEN_TYPE, "CHAR":TOKEN_TYPE, "P":TOKEN_PRINT, "(":TOKEN_OPEN_PARENTHESIS, ")":TOKEN_CLOSE_PARENTHESIS, "=":TOKEN_EQUAL_SIGN, "{":TOKEN_OPEN_CURLY_BRACE, "}":TOKEN_CLOSE_CURLY_BRACE, "+":TOKEN_OP, "-":TOKEN_OP };
 
+var terminals = {"P":TOKEN_PRINT, "(":TOKEN_OPEN_PARENTHESIS, ")":TOKEN_CLOSE_PARENTHESIS, "{":TOKEN_OPEN_CURLY_BRACE, "}":TOKEN_CLOSE_CURLY_BRACE, "+":TOKEN_OP, "-":TOKEN_OP};
 

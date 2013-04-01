@@ -1,12 +1,10 @@
-/* lexer.js  */
-
-    function lex()
+function lex()
     {
         // Get the source code.
         var sourceCode = $("#taSourceCode").val();
 
         // Set the default test program. (For Testing purposes only.)
-		//sourceCode = smallTest2;
+		sourceCode = smallTest9;
 
         // Trim the leading and trailing spaces.
         sourceCode = trim(sourceCode);
@@ -202,11 +200,6 @@
 
             }
 
-        }
-        else
-        {
-            // No Source code found.
-            putErrorMessage("No source code found.",0,0);
         }
 
         // TODO: remove all spaces in the middle; remove linePosition breaks too.
