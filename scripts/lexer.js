@@ -4,7 +4,7 @@ function lex()
         var sourceCode = $("#taSourceCode").val();
 
         // Set the default test program. (For Testing purposes only.)
-		sourceCode = smallTest9;
+		sourceCode = smallTest12;
 
         // Trim the leading and trailing spaces.
         sourceCode = trim(sourceCode);
@@ -58,6 +58,27 @@ function lex()
                 {
                     // Store the current working characterPosition.
                     var currentCharacter = currentLine[characterPosition];
+//debugger;
+                    if(isTerminal(currentCharacter)){
+                        tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter);
+                        lexemeStartPosition = lexemeStartPosition + 1;
+                        continue;
+                    }
+
+                    if(isChar(currentCharacter))
+                            {
+                                // Found a characer.
+                                tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter);
+                                lexemeStartPosition = lexemeStartPosition + 1;
+                                continue;
+                            }
+                            else if(isDigit(currentCharacter))
+                            {
+                                // Found a digit.
+                                tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentCharacter);
+                                lexemeStartPosition = lexemeStartPosition + 1;
+                                continue;
+                            }
 
                     //Check for a delimiter.
                     if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList)

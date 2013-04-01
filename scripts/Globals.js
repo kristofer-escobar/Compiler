@@ -99,6 +99,12 @@ var smallTest8 = '{ { } }';
 
 var smallTest9 = 'P(2)$';
 
+var smallTest10 = '{}';
+
+var smallTest11 = '{{{{{{}}}}}}$';
+
+var smallTest12 = 'P(a)$';
+
 /***********************
  * SYMBOL TABLE - store the values of all the identifiers.
  ***********************

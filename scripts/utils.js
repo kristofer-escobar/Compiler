@@ -219,7 +219,7 @@ function checkVars()
     return true;
 }
 
-function isTerminal(){
+function isTerminal(key){
     for(var i in terminals)
     {
         if(i == key)
@@ -231,13 +231,13 @@ function isTerminal(){
     return false;
 }
 
-function getTerminal(){
+function getTerminal(key){
     for(var i in terminals)
     {
         if(i == key)
         {
             // If found return the value for the corresponding key.
-            return terinals[key];
+            return terminals[key];
         }
     }
 
