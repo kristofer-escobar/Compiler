@@ -67,30 +67,31 @@
         // "compile" button between the two text areas, above.  
         // Note the <input> element's event handler: onclick="btnCompile_click();
         init();
-        putMessage("Compilation Started");
+        putMessage("Compilation Started.");
         // Grab the tokens from the lexer . . .
         tokens = lex();
         //alert(getTokenKinds(tokens));
-        var tokenString = getTokenValues(tokens);
-
-        putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
+        if(tokens != null){
+            var tokenString = getTokenValues(tokens);
         
-        // . . . and parse!
-        if(!errorsFound)
-        {
-            putMessage("Lex returned [" + tokenString + "]");
-            parse();   
-
+            putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
+            
+            // . . . and parse!
             if(!errorsFound)
             {
-                document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
-            }         
-        }
-        else
-        {
-            putMessage("Failed to parse due to lexical errors.");
-        }
+                putMessage("Lex returned [" + tokenString + "]");
+                parse();   
 
+                if(!errorsFound)
+                {
+                    document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
+                }         
+            }
+            else
+            {
+                putMessage("Failed to parse due to lexical errors.");
+            }
+        }// End null check.
     }
 
     </script>
