@@ -1,6 +1,6 @@
 /*
 * parser.js
-*/  
+*/
     function parse()
     {
         putMessage("Parsing [" + getTokenValues(tokens) + "]");
@@ -20,7 +20,7 @@
         // Report the results.
         putMessage("Parsing found " + errorCount + " error(s).");
     }
-    
+
     function parseStatement()
     {
 		if(currentToken.kind == TOKEN_PRINT)
@@ -61,10 +61,10 @@
 			{
 				putMessage("Checking for undeclared variables.");
 			}
-			if(!checkVars())
-			{
-				putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
-			}
+			//if(!checkVars())
+			//{
+			//	putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
+			//}
 
 			//addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
 		}
@@ -158,24 +158,25 @@
 		}
     }
 
-    function parseIntExpr()
-    {
+    function parseIntExpr(){
 //debugger;
-		if (tokens[tokenIndex].kind == TOKEN_OP) 
-		{
-			match(TOKEN_DIGIT);
-			match(TOKEN_OP);
-			if(verboseMode)
-			{
-				putMessage("Parsing expression.");
+		if(tokenIndex < tokens.length){
+			if(tokens[tokenIndex].kind == TOKEN_OP){
+				match(TOKEN_DIGIT);
+				match(TOKEN_OP);
+				if(verboseMode){
+					putMessage("Parsing expression.");
+				}
+				parseExpr();
 			}
-			parseExpr();
-		} 
-		else 
-		{
+			else{
+				match(TOKEN_DIGIT);
+			}
+		}// End token check.
+		else{
 			match(TOKEN_DIGIT);
 		}
-    }
+    } // End function.
 
     function parseCharExpr()
     {

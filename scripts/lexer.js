@@ -3,7 +3,7 @@ function lex(){
     var sourceCode = $("#taSourceCode").val();
 
     // Set the default test program. (For Testing purposes only.)
-	sourceCode = smallTest8;
+	//sourceCode = smallTest2;
 
     // Trim the leading and trailing spaces.
     sourceCode = sourceCode.trim();
@@ -177,6 +177,18 @@ debugger;
             if(isTerminal(currentCharacter)){
                 // Found a terminal.
                 tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter);
+                lexemeStartPosition = lexemeStartPosition + 1;
+                continue;
+            }
+            else if(isChar(currentCharacter)){
+                // Found a characer.
+                tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter);
+                lexemeStartPosition = lexemeStartPosition + 1;
+                continue;
+            }
+            else if(isDigit(currentCharacter)){
+                // Found a digit.
+                tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentCharacter);
                 lexemeStartPosition = lexemeStartPosition + 1;
                 continue;
             }
