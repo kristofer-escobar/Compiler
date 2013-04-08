@@ -11,8 +11,12 @@
         // A valid parse derives the G(oal) production, so begin there.
         parseStatement();
 
-        if(verboseMode)
-		{
+        var endIndex = tokenIndex - 1;
+        if(endIndex !== (tokens.length )){
+            putErrorMessage("Unexpected token",currentToken.line, currentToken.position);
+        }
+
+        if(verboseMode){
 			putMessage("Creating symbol table.");
 		}
         createSymbolTable();

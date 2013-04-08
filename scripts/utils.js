@@ -152,14 +152,15 @@ function getNextCharacter(line, startPosition)
 function getNextToken()
     {
         var thisToken = EOF;    // Let's assume that we're at the EOF.
-        if (tokenIndex < tokens.length)
+        if (tokenIndex < (tokens.length))
         {
             putMessage("Getting next token.");
             // If we're not at EOF, then return the next token in the stream and advance the index.
             thisToken = tokens[tokenIndex];
             putMessage("Current token:" + thisToken.value);
-            tokenIndex++;
         }
+            tokenIndex++;
+
         return thisToken;
     }
 
