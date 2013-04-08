@@ -64,7 +64,7 @@
 			//if(!checkVars())
 			//{
 			//	putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
-			//}
+			//  }
 
 			//addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
 		}

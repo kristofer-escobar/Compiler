@@ -1,5 +1,6 @@
 function lex(){
     // Get the source code.
+
     var sourceCode = $("#taSourceCode").val();
 
     // Set the default test program. (For Testing purposes only.)
@@ -52,7 +53,7 @@ function lex(){
         for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
             // Store the current working characterPosition.
             var currentCharacter = currentLine[characterPosition];
-debugger;
+//debugger;
             //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
             if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                 if(currentCharacter == EOF){ // Reached end of file.
@@ -181,10 +182,17 @@ debugger;
                 continue;
             }
             else if(isChar(currentCharacter)){
-                // Found a characer.
-                tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter);
-                lexemeStartPosition = lexemeStartPosition + 1;
-                continue;
+                // peek ahead one character.
+                if((characterPosition + 1) < currentLine.length){
+                    var nextCharacter = currentLine[characterPosition + 1];
+                    if((!isChar(nextCharacter) || isTerminal(nextCharacter)) && ((characterPosition - lexemeStartPosition) <= 1)) {
+                        // Found a characer.
+                        tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter);
+                        lexemeStartPosition = lexemeStartPosition + 1;
+                        continue;
+                    }
+
+                }
             }
             else if(isDigit(currentCharacter)){
                 // Found a digit.
