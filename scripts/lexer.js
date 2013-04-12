@@ -53,7 +53,7 @@ function lex(){
         for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
             // Store the current working characterPosition.
             var currentCharacter = currentLine[characterPosition];
-//debugger;
+debugger;
             //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
             if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                 if(currentCharacter == EOF){ // Reached end of file.
