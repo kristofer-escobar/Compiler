@@ -13,14 +13,14 @@ function lex(){
     if(sourceCode.length <= 0){
         putMessage("Error: No source code found.");
         return null;
-    }
+    } // End if
     // Check for the end of file symbol.
     if(sourceCode.indexOf(EOF) == -1){
         // End of symbol was not found, but it will be added.
         sourceCode = sourceCode + EOF;
 
         putWarningMessage("EOF symbol not found, but has been added.",0,0);
-    }
+    } // End if
 
     // Divide the source code into lines.
     sourceLines = sourceCode.split("\n");
@@ -31,7 +31,7 @@ function lex(){
     // Check if the end of file symbol is at the end of the file.
     if(sourceCode.indexOf(EOF) != sourceCode.length - 1){
         putWarningMessage("All content after EOF symbol will be disregarded",(lineEndPosition-1), sourceLines[lineEndPosition-1].indexOf(EOF)+1);
-    }
+    } // End if
 
     // Iterate through each line.
     for(var linePosition = 0; linePosition < lineEndPosition; linePosition++){
@@ -47,13 +47,13 @@ function lex(){
         // Find the position of the EOF symbol.
         if(linePosition == (lineEndPosition - 1)){
             LineEndPosition = sourceLines[linePosition].indexOf(EOF) + 1;
-        }
+        } // End if
 
         // Iterate through the characters in the current linePosition.
         for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
             // Store the current working characterPosition.
             var currentCharacter = currentLine[characterPosition];
-debugger;
+//debugger;
             //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
             if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                 if(currentCharacter == EOF){ // Reached end of file.
@@ -64,27 +64,23 @@ debugger;
                     if(currentLexeme.length > 1){
                         // Remove the end of file symbol from current lexeme.
                         currentLexeme = currentLexeme.slice(0, currentLexeme.indexOf(EOF));
-                    }
-                    else{
+                    } else{
                         // End of file symbol found, end of file reached.
                         continue;
-                    }
+                    } // End else
 
-                }// End of EOF check.
-                else if(REGEX_SPACE.test(currentCharacter)){ // Reached a whitespace.
+                } else if(REGEX_SPACE.test(currentCharacter)){ // Reached a whitespace.
                     if(characterPosition > lexemeStartPosition){
                         // Get the current lexeme.
                         currentLexeme = currentLine.slice(lexemeStartPosition, characterPosition);
-                    }
-                    else{
+                    } else{
                         lexemeStartPosition = lexemeStartPosition + 1;
                         continue;
-                    }
-                }
-                else{ // Reached end of line.
+                    } // End else
+                } else{ // Reached end of line.
                     // Get the current lexeme.
                     currentLexeme = currentLine.slice(lexemeStartPosition, currentLine.length);
-                }
+                } // End else
 
                 // Check if the lexeme is in the lexicon.
                 var tokenKind = checkLexicon(currentLexeme);
@@ -92,21 +88,19 @@ debugger;
                 if(tokenKind !== null){
                     //Found in lexicon.
                     tokenize(tokenKind,linePosition,characterPosition,currentLexeme);
-                }
-                else{
+                } else{
                     if(isChar(currentLexeme)){
                         // Found a characer.
                         tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentLexeme);
-                    }
+                    } // End else
                     else if(isDigit(currentLexeme)){
                         // Found a digit.
                         tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentLexeme);
-                    }
-                    else{
+                    } else{
                         // Unknown lexeme.
                         putErrorMessage("Invalid token.",linePosition,characterPosition);
-                    }
-                }
+                    } // End else
+                } // End else
 
                 // Increment lexeme start position.
                 lexemeStartPosition = characterPosition + 1;
@@ -131,12 +125,12 @@ debugger;
                     if(currentLine.indexOf("\"", startQuotePosition + 1) == -1){
                         inCharList = false;
                         putErrorMessage("CharList is not properly closed by a double-quote",linePosition,characterPosition);
-                    }
+                    } // End if
 
                     lexemeStartPosition = characterPosition + 1;
 
                     continue;
-                }
+                } // End if
 
                 while(inCharList){
                     if(currentCharacter == "\""){
@@ -146,10 +140,9 @@ debugger;
                             // Add charList to token stream.
                             tokenize(TOKEN_CHARLIST, linePosition, startQuotePosition, charListValue);
                             charListValue = "";
-                        }
-                        else{
+                        } else{
                             putErrorMessage("Invalid charList.",linePosition, characterPosition);
-                        }
+                        } // End else
 
                         // Add end quote to token stream.
                         tokenize(TOKEN_QUOTE, linePosition, startQuotePosition, currentCharacter);
@@ -157,11 +150,11 @@ debugger;
                         lexemeStartPosition = characterPosition + 1;
 
                         continue;
-                    }
+                    } // End if
 
                     if(currentCharacter !== " "){
                         charListValue = charListValue + currentCharacter;
-                    }
+                    } // End if
 
                     // Move to the next character.
                     characterPosition = characterPosition + 1;
@@ -180,8 +173,7 @@ debugger;
                 tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter);
                 lexemeStartPosition = lexemeStartPosition + 1;
                 continue;
-            }
-            else if(isChar(currentCharacter)){
+            } else if(isChar(currentCharacter)){
                 // peek ahead one character.
                 if((characterPosition + 1) < currentLine.length){
                     var nextCharacter = currentLine[characterPosition + 1];
@@ -190,16 +182,15 @@ debugger;
                         tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter);
                         lexemeStartPosition = lexemeStartPosition + 1;
                         continue;
-                    }
+                    } // End if
 
-                }
-            }
-            else if(isDigit(currentCharacter)){
+                } // End if
+            } else if(isDigit(currentCharacter)){
                 // Found a digit.
                 tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentCharacter);
                 lexemeStartPosition = lexemeStartPosition + 1;
                 continue;
-            }
+            } // End else
 
         } // End of For each character.
 

@@ -1,9 +1,10 @@
 /*
 * parser.js
 */
-    function parse()
-    {
+    function parse(){
         putMessage("Parsing [" + getTokenValues(tokens) + "]");
+
+        var tree = new Tree();
 
         // Grab the next token.
         currentToken = getNextToken();
@@ -25,34 +26,32 @@
         putMessage("Parsing found " + errorCount + " error(s).");
     }
 
-    function parseStatement()
-    {
-		if(currentToken.kind == TOKEN_PRINT)
-		{
-			if(verboseMode)
-			{
+    function parseStatement(){
+		tree.addBranchNode("Statement");
+
+		if(currentToken.kind == TOKEN_PRINT){
+			if(verboseMode){
 				putMessage("Parsing Print.");
-			}
+			}// End if
+
 			parsePrint();
-		}
-		else if(currentToken.kind == TOKEN_IDENTIFIER)
-		{
+		} else if(currentToken.kind == TOKEN_IDENTIFIER){
 			var idStart = currentToken.position;
 
-			if(verboseMode)
-			{
+			if(verboseMode){
 				putMessage("Parsing Identifier.");
-			}
+			} // End if
+
 			parseId();
 
 			tokenValueStart = tokenIndex;
 
 			match(TOKEN_EQUAL_SIGN);
 
-			if(verboseMode)
-			{
+			if(verboseMode){
 				putMessage("Parsing expression.");
-			}
+			} // End if
+
 			parseExpr();
 
 			tokenValueEnd = tokenIndex;
@@ -61,164 +60,168 @@
 
 			varValues[idName] = tokenContent;
 
-			if(verboseMode)
-			{
+			if(verboseMode){
 				putMessage("Checking for undeclared variables.");
-			}
+			} // End if
 			//if(!checkVars())
 			//{
 			//	putErrorMessage("Variable '" + idName + "' was never declared.", tokens[tokenValueStart-1].line, tokens[idStart-1].position);
 			//  }
 
 			//addToSymbolTable(idName, idAddr++, tokenContent, idType, idIsUsed, idScope, idLifetime, idCategory, idVisibility);
-		}
-		else if(currentToken.kind == TOKEN_TYPE)
-		{
-			if(verboseMode)
-			{
+		} else if(currentToken.kind == TOKEN_TYPE){
+			if(verboseMode){
 				putMessage("Parsing Variable declaration.");
-			}
+			} // End if
+
 			parseVarDecl();
-		}
-		else if(currentToken.kind == TOKEN_OPEN_CURLY_BRACE)
-		{
+		} else if(currentToken.kind == TOKEN_OPEN_CURLY_BRACE){
 			match(TOKEN_OPEN_CURLY_BRACE);
-			if(verboseMode)
-			{
+			if(verboseMode){
 				putMessage("Parsing statement list.");
-			}
+			} // End if
+
 			parseStatementList();
 //debugger;
 			match(TOKEN_CLOSE_CURLY_BRACE);
-		}
-		else
-		{
+		} else{
 			// Found unknown statement.
 			putErrorMessage("Unknown statement", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
-		}
-    }
+		} // End else
 
-    function parseStatementList()
-    {
+		tree.endChildren();
+    } // End parseStatement
+
+    function parseStatementList(){
 //debugger;
-		if(currentToken.kind !== EOF && currentToken.kind !== TOKEN_CLOSE_CURLY_BRACE)
-		{
-			if(verboseMode)
-			{
+		tree.addBranchNode("StatementList");
+
+		if(currentToken.kind !== EOF && currentToken.kind !== TOKEN_CLOSE_CURLY_BRACE){
+			if(verboseMode){
 				putMessage("Parsing statement.");
-			}
+			} //  End if
+
 			parseStatement();
 
-			if(verboseMode)
-			{
+			if(verboseMode){
 				putMessage("Parsing statement list.");
-			}
-			parseStatementList();
-		}
-    }
+			} // End if
 
-    function parsePrint()
-    {
+			parseStatementList();
+		} // End if
+
+		tree.endChildren();
+    }  // End parseStatementList
+
+    function parsePrint(){
+		tree.addBranchNode("Print");
+
 		match(TOKEN_PRINT);
 		match(TOKEN_OPEN_PARENTHESIS);
-		if(verboseMode)
-		{
+		if(verboseMode){
 				putMessage("Parsing expression.");
-		}
+		} // End if
+
 		parseExpr();
 		match(TOKEN_CLOSE_PARENTHESIS);
-    }
 
-    function parseExpr()
-    {
+		tree.endChildren();
+    } // End parsePrint
+
+    function parseExpr(){
 //debugger;
-		if(currentToken.kind == TOKEN_DIGIT)
-		{
-			if(verboseMode)
-			{
+		tree.addBranchNode("Expression");
+
+		if(currentToken.kind == TOKEN_DIGIT){
+			if(verboseMode){
 				putMessage("Parsing Int expression.");
-			}
+			} // End if
 			parseIntExpr();
-		}
-		else if(currentToken.kind == TOKEN_QUOTE)
-		{
-			if(verboseMode)
-			{
+		} else if(currentToken.kind == TOKEN_QUOTE){
+			if(verboseMode){
 				putMessage("Parsing Char expression.");
-			}
+			} // End if
+
 			parseCharExpr();
-		}
-		else if(currentToken.kind == TOKEN_IDENTIFIER)
-		{
-			if(verboseMode)
-			{
+		} else if(currentToken.kind == TOKEN_IDENTIFIER){
+			if(verboseMode){
 				putMessage("Parsing Identifier.");
-			}
+			} // End else if
 			parseId();
-		}
-		else
-		{
+		} else{
 			putErrorMessage("Unknown expression.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
-		}
-    }
+		} // End if
+
+		tree.endChildren();
+    } // End parseExpr
 
     function parseIntExpr(){
 //debugger;
+		tree.addBranchNode("IntExpr");
+
 		if(tokenIndex < tokens.length){
 			if(tokens[tokenIndex].kind == TOKEN_OP){
 				match(TOKEN_DIGIT);
 				match(TOKEN_OP);
 				if(verboseMode){
 					putMessage("Parsing expression.");
-				}
+				} // End if
 				parseExpr();
-			}
+			} // End if
 			else{
 				match(TOKEN_DIGIT);
-			}
+			} // End else
 		}// End token check.
 		else{
 			match(TOKEN_DIGIT);
-		}
-    } // End function.
+		} // End else
 
-    function parseCharExpr()
-    {
+		tree.endChildren();
+
+    } // End parseIntExpr
+
+    function parseCharExpr(){
+		tree.addBranchNode("CharExpr");
+
 		match(TOKEN_QUOTE);
 		match(TOKEN_CHARLIST);
 		match(TOKEN_QUOTE);
-    }
 
-    function parseId()
-    {
+		tree.endChildren();
+    } // End parseCharExpr
+
+    function parseId(){
+		tree.addBranchNode("Id");
+
 		idName = currentToken.value;
 		match(TOKEN_IDENTIFIER);
-    }
 
-    function parseVarDecl()
-    {
+		tree.endChildren();
+    } // End parseId
+
+    function parseVarDecl(){
+		tree.addBranchNode("VarDecl");
+
 		idType = currentToken.value;
 		match(TOKEN_TYPE);
-		if(verboseMode)
-		{
+		if(verboseMode){
 			putMessage("Parsing Identifier.");
-		}
+		} // End if
 		parseId();
 		varTypes[idName] = idType;
-    }
 
-    function match(expectedKind)
-    {
+		tree.endChildren();
+    } //  End parseVarDecl
+
+    function match(expectedKind){
 		putMessage("Expecting: " + expectedKind);
 
-		if(currentToken.kind == expectedKind)
-		{
+		if(currentToken.kind == expectedKind){
+			addLeafNode(expectedKind);
 			putMessage("Received: " + currentToken.kind);
 
 			currentToken = getNextToken();
-		}
-		else
-		{
+		} else{
 			putErrorMessage("Expected a token of kind: " + expectedKind + " but got token of kind " + currentToken.kind + ".",currentToken.line, currentToken.position);
-		}
-    }
+		} // End else
+    } // End match

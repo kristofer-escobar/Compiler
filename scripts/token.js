@@ -12,8 +12,7 @@ function Token () {
     };
 }
 
-function tokenize(kind, line, position, value)
-{
+function tokenize(kind, line, position, value){
     var token = new Token();
     token.create(kind, line, position, value);
     token_stream.push(token);
