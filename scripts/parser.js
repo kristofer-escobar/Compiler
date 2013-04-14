@@ -4,8 +4,6 @@
     function parse(){
         putMessage("Parsing [" + getTokenValues(tokens) + "]");
 
-        var tree = new Tree();
-
         // Grab the next token.
         currentToken = getNextToken();
 
@@ -27,6 +25,7 @@
     }
 
     function parseStatement(){
+		var tree = new Tree();
 		tree.addBranchNode("Statement");
 
 		if(currentToken.kind == TOKEN_PRINT){

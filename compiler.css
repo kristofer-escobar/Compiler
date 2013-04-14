@@ -1,7 +1,6 @@
 /* compiler.css */
 
-body
-{
+body {
 	background-color: #909193;
 	background-image: url(images/background.png);
 	font-family: Helvetica, Verdana, Arial, sans-serif;
@@ -10,16 +9,14 @@ body
 	font-style: normal;
 }
 
-h1 
-{ 
+h1 { 
     color: white;
 	font-size:   20pt;
 	font-weight: normal;
 	font-style: normal;	
 }
 
-h2
-{
+h2 {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
 	font-size:   16pt;
 	font-weight: normal;
@@ -27,10 +24,17 @@ h2
 }
 
 .center {
-    
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+}
+
+.textAreas{
+    clear: right;
+    position: absolute;
+    right:100px;
+	top:100px;
+    width: 70%;
 }
 
 .whiteText {
@@ -44,6 +48,9 @@ h2
 .buttons {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
 	font-size: 10pt;
+	position:absolute;
+	left:500px;
+	top:70px;
     text-align: center;
     padding: 5px;
     margin-left: auto;
@@ -55,4 +62,20 @@ h2
 	font-size: 10pt;
 	color:white;
 }
+.left {
+    float: left;
+    width: 50%;
+    text-align: right;
+}
 
+.right {
+    float: right;
+    width: 50%;
+    text-align: left;
+}
+
+.indent {
+	display: inherit;
+	text-indent: 100px;
+
+}

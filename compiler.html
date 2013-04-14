@@ -8,33 +8,29 @@
 </head>
 <body onload="init();">
     <span class="center"><h1><i class="whiteText">Kris' Compiler Project</i></h1></span>
-    <pre class="whiteText">
-                                                    Program       ::== Statement $
-                                                    Statement     ::== P ( Expr ) 
-                                                                  ::== Id = Expr
-                                                                  ::== VarDecl
-                                                                  ::== { StatementList }
-                                                    StatementList ::== Statement StatementList 
-                                                                  ::== ε
-                                                    Expr          ::== IntExpr
-                                                                  ::== CharExpr
-                                                                  ::== Id
-                                                    IntExpr       ::== digit op Expr
-                                                                  ::== digit
-                                                    CharExpr      ::== " CharList " CharList 
-                                                                  ::== Char CharList
-                                                                  ::== ε 
-                                                    VarDecl       ::== Type Id
-                                                    Type          ::== int | char
-                                                    Id            ::== Char
-                                                    Char          ::== a | b | c ... z
-                                                    digit         ::== 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 
-                                                    op            ::== + | -
-    </pre>  
-    <div class="center">
-        <textarea id="taSourceCode" cols="82" rows="15" placeholder="Enter source code here."></textarea>
-        <br>
-    </div>
+    <div class="whiteText">
+        <div>Program<span class="indent">::== Statement $</span></div>
+        <div>Statement<span class="indent">::== P ( Expr )</span></div>
+        <div><span class="indent"> ::== Id = Expr </span></div>
+        <div><span class="indent"> ::== VarDecl </span></div>
+        <div><span class="indent">::== { StatementList } </span></div>
+        <div>StatementList<span class="indent">::== Statement StatementList </span></div>
+        <div><span class="indent">::== ε </span></div>
+        <div>Expr<span class="indent">::== IntExpr </span></div>
+        <div><span class="indent">::== CharExpr </span></div>
+        <div><span class="indent">::== Id </span></div>
+        <div>IntExpr<span class="indent">::== digit op Expr </span></div>
+        <div><span class="indent">::== digit </span></div>
+        <div>CharExpr<span class="indent">::== " CharList " CharList </span></div>
+        <div><span class="indent">::== Char CharList </span></div>
+        <div><span class="indent">::== ε </span></div>
+        <div>VarDecl<span class="indent">::== Type Id </span></div>
+        <div>Type<span class="indent">::== int | char </span></div>
+        <div>Id<span class="indent">::== Char </span></div>
+        <div>Char<span class="indent">::== a | b | c ... z </span></div>
+        <div>digit<span class="indent">::== 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 </span></div>
+        <div>op<span class="indent">::== + | - </span></div>
+    </div>  
     <div class="buttons">
         <span class="whiteText">Click to compile.</span>
         <input type="button" id="btnCompile" class="button" value="Compile" onclick="btnCompile_click();"/>
@@ -44,10 +40,15 @@
             <input name="mode" value="verbose" onclick="setErrorMode('verbose');" type="radio">Verbose
         </div>
     </div>
-    <div class="center">
-        <textarea id="taOutput" cols="82" rows="15" placeholder="Output will be shown here."></textarea>
-        <br><br>
-        <textarea id="taSymbolTable" cols="82" rows="10" placeholder="Symbol table will be shown here."></textarea>
+    <div class="textAreas"><br><br>
+        <div class="left">
+            <textarea id="taSourceCode" cols="60" rows="15" placeholder="Enter source code here."></textarea>
+            <textarea id="parseTree" cols="60" rows="15" placeholder="Parse Tree will be shown here."></textarea>
+        </div>
+        <div class="right">
+            <textarea id="taOutput" cols="60" rows="15" placeholder="Output will be shown here."></textarea>
+            <textarea id="taSymbolTable" cols="60" rows="15" placeholder="Symbol table will be shown here."></textarea>
+        </div>
     </div>
     <!-- Footer -->
 
@@ -55,14 +56,14 @@
     // (http://developer.yahoo.com/performance/rules.html#js_bottom) -->
     <script type="text/javascript" src="scripts/token.js"></script>
     <script type="text/javascript" src="scripts/identifier.js"></script>
+    <script type="text/javascript" src="scripts/tree.js"></script>
     <script type="text/javascript" src="scripts/globals.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>	
     <script type="text/javascript" src="scripts/lexer.js"></script>	
     <script type="text/javascript" src="scripts/parser.js"></script> 
     <script type="text/javascript">
     
-    function btnCompile_click()
-    {        
+    function btnCompile_click(){        
         // This is executed as a result of the usr pressing the 
         // "compile" button between the two text areas, above.  
         // Note the <input> element's event handler: onclick="btnCompile_click();
@@ -77,22 +78,20 @@
             putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
             
             // . . . and parse!
-            if(!errorsFound)
-            {
+            if(!errorsFound){
                 putMessage("Lex returned [" + tokenString + "]");
+
                 parse();   
 
-                if(!errorsFound)
-                {
+                if(!errorsFound){
                     document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
-                }         
-            }
-            else
-            {
+                    document.getElementById("parseTree").value = tree.toString();
+                } // End if       
+            } else{
                 putMessage("Failed to parse due to lexical errors.");
-            }
+            } // End else
         }// End null check.
-    }
+    } // End btnCompile_click
 
     </script>
 </body>

@@ -38,7 +38,7 @@ function isRoot(){
 		this.root = node;
 		return true;
 	} // End if
-	
+
 	return false;
 } // End isRoot
 
