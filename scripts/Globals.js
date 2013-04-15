@@ -6,15 +6,7 @@
  * GLOBAL VARIABLES
  *********************
  */
-var token_stream = [];
-
 var lexemeStartPosition = 0;
-
-var tokens = "";
-
-var tokenIndex = 0;
-
-var currentToken = "";
 
 var currentLexeme = "";
 
@@ -42,7 +34,7 @@ var inCharList = false;
 
 var errorsFound = false;
 
-var verboseMode = false;
+
 
 var idName = "";
 

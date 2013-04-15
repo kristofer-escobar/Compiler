@@ -9,8 +9,8 @@ function init(){
     document.getElementById("taOutput").value = "";
     document.getElementById("taSymbolTable").value = "";
     // Set the initial values for our globals.
-    tokens = "";
-    tokenIndex = 0;
+    //tokens = "";
+    //tokenIndex = 0;
     currentToken = ' ';
     errorCount = 0;
     warningCount = 0;
@@ -125,19 +125,6 @@ function getNextCharacter(line, startPosition){
 
 } // End getNextCharacter
 
-function getNextToken(){
-        var thisToken = EOF;    // Let's assume that we're at the EOF.
-        if (tokenIndex < (tokens.length)){
-            putMessage("Getting next token.");
-            // If we're not at EOF, then return the next token in the stream and advance the index.
-            thisToken = tokens[tokenIndex];
-            putMessage("Current token:" + thisToken.value);
-        } // End if
-            tokenIndex++;
-
-        return thisToken;
-    } // End getNextToken
-
 function getSymbolTable(){
     var symbolTableContents = "";
 
@@ -148,7 +135,7 @@ function getSymbolTable(){
     return symbolTableContents;
 } // End getSymbolTable
 
-function getTokenContent(start, end){
+function getTokenContent(tokens, start, end){
     var contents = "";
 
     for(var i = start; i < (end-1); i++){

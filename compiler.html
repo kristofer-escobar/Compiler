@@ -33,7 +33,7 @@
     </div>  
     <div class="buttons">
         <span class="whiteText">Click to compile.</span>
-        <input type="button" id="btnCompile" class="button" value="Compile" onclick="btnCompile_click();"/>
+        <input type="button" id="btnCompile" class="button" value="Compile" onclick="run();"/>
         <div class="mode">
             Error Mode:
             <input name="mode" value="standard" checked="checked" onclick="setErrorMode('standard');" type="radio" id="standard">Standard
@@ -61,38 +61,6 @@
     <script type="text/javascript" src="scripts/utils.js"></script>	
     <script type="text/javascript" src="scripts/lexer.js"></script>	
     <script type="text/javascript" src="scripts/parser.js"></script> 
-    <script type="text/javascript">
-    
-    function btnCompile_click(){        
-        // This is executed as a result of the usr pressing the 
-        // "compile" button between the two text areas, above.  
-        // Note the <input> element's event handler: onclick="btnCompile_click();
-        init();
-        putMessage("Compilation Started.");
-        // Grab the tokens from the lexer . . .
-        tokens = lex();
-        //alert(getTokenKinds(tokens));
-        if(tokens != null){
-            var tokenString = getTokenValues(tokens);
-        
-            putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
-            
-            // . . . and parse!
-            if(!errorsFound){
-                putMessage("Lex returned [" + tokenString + "]");
-
-                parse();   
-
-                if(!errorsFound){
-                    document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
-                    document.getElementById("parseTree").value = tree.toString();
-                } // End if       
-            } else{
-                putMessage("Failed to parse due to lexical errors.");
-            } // End else
-        }// End null check.
-    } // End btnCompile_click
-
-    </script>
+    <script type="text/javascript" src="scripts/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// Tree1.js
+// Tree.js
 // Based on work By Alan G. Labouseur, Michael Ardizzone and Tim Smith.
 
 function Tree(){
@@ -9,33 +9,36 @@ this.currentNode = {};
 this.addBranchNode = function(name){
 	var node = {name: name, children: [], parent: {}};
 
-	if(!isRoot()){
+	if(!isRoot(this.rootNode)){
 		node.parent = this.currentNode;
 
 		// Add node to children.
 		this.currentNode.children.push(node);
+	} else{
+        this.rootNode = node;
+    }//  End else.
 
-		this.currentNode = node;
-	} //  End if
+    this.currentNode = node;
 
 }; // End addBranchNode
 
 this.addLeafNode = function(name){
 	var node = {name: name, children: [], parent: {}};
 
-	if(!isRoot()){
+	if(!isRoot(this.rootNode)){
 		node.parent = this.currentNode;
 
 		// Add node to children.
 		this.currentNode.children.push(node);
-	} // End if
+	} else{
+        this.rootNode = node;
+    }// End else.
 
 }; // End addLeafNode
 
-function isRoot(){
-	if((this.root === null) || (!this.root)){
+function isRoot(root){
+	if((root === null) || (!root)){
 		// This is the root node.
-		this.root = node;
 		return true;
 	} // End if
 
@@ -78,7 +81,7 @@ this.toString = function() {
     } // End toString
 
     // Initial call to expand.
-    expand(this.root, 0);
+    expand(this.rootNode, 0);
 
     return traversalResult;
     };
