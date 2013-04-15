@@ -227,7 +227,7 @@ function match(expectedKind){
 	putMessage("Expecting: " + expectedKind);
 
 	if(currentToken.kind == expectedKind){
-		tree.addLeafNode(expectedKind);
+		tree.addLeafNode(currentToken.value);
 		putMessage("Received: " + currentToken.kind);
 
 		currentToken = getNextToken();
@@ -246,7 +246,6 @@ function getNextToken(){
         } // End if
 
         tokenIndex++;
-        alert(tokenIndex);
 
         return thisToken;
     } // End getNextToken

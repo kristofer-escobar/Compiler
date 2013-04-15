@@ -34,8 +34,6 @@ var inCharList = false;
 
 var errorsFound = false;
 
-
-
 var idName = "";
 
 var idAddr = 0;
