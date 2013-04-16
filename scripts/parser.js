@@ -3,11 +3,17 @@
 */
 
 function Parser(tokenStream){
+
+	// Private attributes.
 	var tokens = tokenStream;
 	var tokenIndex = 0;
 	var currentToken = null;
 	var tree = new Tree();
+	var scope = new ScopeTree();
+
+	// Public attributes.
 	this.tree = tree;
+	this.scope = scope;
 
 	this.parse = function(){
 		// Display tokens to be parsed.
@@ -16,8 +22,13 @@ function Parser(tokenStream){
 		// Grab the next token.
 		currentToken = getNextToken();
 
+		// Add first scope.
+		scope.newScope();
+
 		// A valid parse derives the Statement production, so begin there.
 		parseStatement();
+
+		scope.endScope();
 
 		var endIndex = tokenIndex - 1;
 
@@ -47,6 +58,32 @@ function Parser(tokenStream){
 			parsePrint();
 
 		} else if(currentToken.kind == TOKEN_IDENTIFIER){
+
+			var idenName = currentToken.value;
+
+			// Save pointer to current scope.
+			var currentScope = scope.currentScope;
+
+			// Flag if variable found in a parent scope.
+			var scopeFound = false;
+
+			// Check scopes until we are at the root.(No more parents)
+			while(scope.currentScope.parent && !scopeFound){
+				if(scope.currentScope.entries[currentToken["value"]]){
+					// Scope found, variable has been declared.
+					scopeFound = true;
+				} // End if
+
+				scope.currentScope = scope.currentScope.parent;
+			} // End  while.
+
+			if(!scopeFound){
+				putErrorMessage("Undeclared Identifier", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
+			} // End if
+
+			// Return back to current scope.
+			scope.currentScope = currentScope;
+
 			var idStart = currentToken.position;
 
 			if(verboseMode){
@@ -69,6 +106,12 @@ function Parser(tokenStream){
 
 			var tokenContent = getTokenContent(tokens, tokenValueStart, tokenValueEnd);
 
+			// Store the value of the identifer.
+			if(scope.currentScope.entries[idenName]){
+				scope.currentScope.entries[idenName].value = tokenContent;
+			}
+
+
 			varValues[idName] = tokenContent;
 
 			if(verboseMode){
@@ -89,6 +132,10 @@ function Parser(tokenStream){
 
 		} else if(currentToken.kind == TOKEN_OPEN_CURLY_BRACE){
 			match(TOKEN_OPEN_CURLY_BRACE);
+
+			// Add new entry into a symbol table.
+			scope.newScope();
+
 			if(verboseMode){
 				putMessage("Parsing statement list.");
 			} // End if
@@ -96,6 +143,8 @@ function Parser(tokenStream){
 			parseStatementList();
 
 			match(TOKEN_CLOSE_CURLY_BRACE);
+
+			scope.endScope();
 		} else{
 			// Found unknown statement.
 			putErrorMessage("Unknown statement", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
@@ -212,12 +261,31 @@ function parseId(){
 function parseVarDecl(){
 	tree.addBranchNode("VarDecl");
 
+	// Create an identifier object.
+	var id = new Identifier();
+
+	// Set the identifier type.
+	id.type = currentToken.value;
+
 	idType = currentToken.value;
 	match(TOKEN_TYPE);
 	if(verboseMode){
 		putMessage("Parsing Identifier.");
 	} // End if
+
+	// Set the identifer name.
+	id.name = currentToken.value;
+
+	// Add entry into symbol table, if it doesn't already exist.
+	if(!scope.currentScope.entries[currentToken["value"]]){
+		scope.currentScope.entries[currentToken["value"]] = id;
+	} else{
+		// Redeclared identifer.
+		putErrorMessage("Redeclared identifer",currentToken.line, currentToken.position);
+	}
+
 	parseId();
+
 	varTypes[idName] = idType;
 
 	tree.endChildren();
