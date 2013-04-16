@@ -41,8 +41,13 @@ function run(){
 
             // Check if parse produced any errors. 
             if(!errorsFound){
-				// Display symbol table.
-                document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
+			// Create AST
+
+			// Display symbol table.
+			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
+
+				
+                //document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
 
                 // Display parse tree.
                 document.getElementById("parseTree").value = parser.tree.toString();

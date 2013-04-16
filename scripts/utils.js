@@ -125,15 +125,15 @@ function getNextCharacter(line, startPosition){
 
 } // End getNextCharacter
 
-function getSymbolTable(){
-    var symbolTableContents = "";
+// function getSymbolTable(){
+//     var symbolTableContents = "";
 
-    for(var i in symbolTable){
-        symbolTableContents = symbolTableContents + "Name: " + i + "  Value: " + symbolTable[i].value + "  Type: " + symbolTable[i].type + "  Address: "+ symbolTable[i].address + "  isUsed: " + symbolTable[i].isUsed + "\n";
-    } // End for
+//     for(var i in symbolTable){
+//         symbolTableContents = symbolTableContents + "Name: " + i + "  Value: " + symbolTable[i].value + "  Type: " + symbolTable[i].type + "  Address: "+ symbolTable[i].address + "  isUsed: " + symbolTable[i].isUsed + "\n";
+//     } // End for
 
-    return symbolTableContents;
-} // End getSymbolTable
+//     return symbolTableContents;
+// } // End getSymbolTable
 
 function getTokenContent(tokens, start, end){
     var contents = "";
@@ -144,20 +144,20 @@ function getTokenContent(tokens, start, end){
     return contents;
 } // End getTokenContent
 
-function createSymbolTable(){
-    //debugger;
-    for(var i in varTypes){
-        if(varValues[i] !== undefined){
-            idIsUsed = true;
-        } else{
-            idIsUsed = false;
-            //putWarningMessage()
-        } // End else
+// function createSymbolTable(){
+//     //debugger;
+//     for(var i in varTypes){
+//         if(varValues[i] !== undefined){
+//             idIsUsed = true;
+//         } else{
+//             idIsUsed = false;
+//             //putWarningMessage()
+//         } // End else
 
-        addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
-    } //  End for
+//         addToSymbolTable(i,idAddr++, varValues[i], varTypes[i], idIsUsed, idScope, idLifetime, idCategory, idVisibility);
+//     } //  End for
 
-} // End createSymbolTable
+// } // End createSymbolTable
 
 function checkVars(){
     for(var i in varValues){

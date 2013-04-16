@@ -8,13 +8,14 @@
 function Identifier () {
     this.name  = null;
     this.address  = -1;
-    this.value = -1;
+    this.value = undefined;
     this.type = null;
     this.isUsed = false;
     this.scope = null;
     this.lifetime = null;
     this.category = null;
     this.visibility = null;
+    this.token = null;
 
     // Function to create a Identifier object.
     this.create = function(name, address, value, type, isUsed, scope, lifetime, category, visibility) {
@@ -34,11 +35,11 @@ function Identifier () {
 /*
  * Function to add an entry to the symbol table.
  */
-function addToSymbolTable(name, address, value, type, isUsed, scope, lifetime, category, visibility){
+// function addToSymbolTable(name, address, value, type, isUsed, scope, lifetime, category, visibility){
 
-	var newIdentifier = new Identifier();
+// 	var newIdentifier = new Identifier();
 
-	newIdentifier.create(name, address, value, type, isUsed, scope, lifetime, category, visibility);
+// 	newIdentifier.create(name, address, value, type, isUsed, scope, lifetime, category, visibility);
 
-	symbolTable[newIdentifier.name] = newIdentifier;
-}
+// 	symbolTable[newIdentifier.name] = newIdentifier;
+// }

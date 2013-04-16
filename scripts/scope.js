@@ -36,6 +36,50 @@ function ScopeTree(){
 		} // End else
 
 	}; // End endChildren
+
+// Create a string representation of the tree.
+this.buildSymbolTable = function() {
+    var traversalResult = "";
+    // Recursive function to handle the expansion of the nodes.
+    function expand(node){
+        // Check for leaf nodes.
+    //     if (!node.children || node.children.length === 0){
+    //          for(var k in node.entries){
+				// traversalResult += 
+				// "Name: " + node.entries[k].name + " " +
+				// "Value: " + node.entries[k].value + " " +
+				// "Type: " + node.entries[k].type + " " + 
+				// "Scope: " + node.entries[k].scope + " " + 
+				// "isUsed: " + node.entries[k].isUsed + "\n";
+    //         }
+    //     }else{
+    //         // Check for branch nodes.
+			for(var j in node.entries){
+				
+				// Add entries into symbol table.
+				symbolTable[node.entries[j].name + node.entries[j].scope] = JSON.stringify(node.entries[j]);
+				alert(symbolTable[node.entries[j].name+ node.entries[j].scope]);
+
+				traversalResult += 
+				"Name: " + node.entries[j].name + " " +
+				"Value: " + node.entries[j].value + " " +
+				"Type: " + node.entries[j].type + " " + 
+				"Scope: " + node.entries[j].scope + " " + 
+				"isUsed: " + node.entries[j].isUsed + "\n";
+            }
+
+            // Recursive call.
+            for (var i = 0; i < node.children.length; i++){
+                expand(node.children[i]);
+            } //  End for
+        //}// End else
+    } // End toString
+
+    // Initial call to expand.
+    expand(this.rootNode);
+
+    return traversalResult;
+    };
 }
 
 function isRoot(root){
@@ -46,4 +90,3 @@ function isRoot(root){
 
 	return false;
 } // End isRoot
-

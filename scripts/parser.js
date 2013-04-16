@@ -40,7 +40,7 @@ function Parser(tokenStream){
 			putMessage("Creating symbol table.");
 		}
 
-		createSymbolTable();
+		//createSymbolTable();
 
 		// Report the results.
 		putMessage("Parsing found " + errorCount + " error(s).");
@@ -109,6 +109,7 @@ function Parser(tokenStream){
 			// Store the value of the identifer.
 			if(scope.currentScope.entries[idenName]){
 				scope.currentScope.entries[idenName].value = tokenContent;
+				scope.currentScope.entries[idenName].isUsed = true;
 			}
 
 
@@ -275,6 +276,12 @@ function parseVarDecl(){
 
 	// Set the identifer name.
 	id.name = currentToken.value;
+
+	// Set scope level.
+	id.scope = scope.currentScope.name;
+
+	// Set token
+	id.token = currentToken;
 
 	// Add entry into symbol table, if it doesn't already exist.
 	if(!scope.currentScope.entries[currentToken["value"]]){
