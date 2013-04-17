@@ -46,11 +46,21 @@ function run(){
 			// Display symbol table.
 			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
 
+			//var entry = symbolTableLookUp("a",1);
+
+			//alert(entry.value);
+
+			//putMessage(" and " + warningCount + " warning(s)");
 				
                 //document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
 
                 // Display parse tree.
                 document.getElementById("parseTree").value = parser.tree.toString();
+
+                var ast = new AST(parser.tree.rootNode);
+
+                document.getElementById("parseTree").value += "\n" + ast.toString();
+
             } // End if       
         } else{ // Parse errors were found. 
 			// Display parse errors.

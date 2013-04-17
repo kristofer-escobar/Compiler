@@ -37,13 +37,17 @@ function putMessage(msg, line, position){
 function putErrorMessage(msg, line, position){
     errorsFound = true;
 
-    document.getElementById("taOutput").value += "Error on line " + (line + 1) + " position " + position + ": " + msg + ".\n";
+    document.getElementById("taOutput").value += "Error on line " + (line + 1) + " position " + (position + 1) + ": " + msg + ".\n";
 
     errorCount = errorCount + 1;
 } // End putErrorMessage
 
 function putWarningMessage(msg, line, position){
-    document.getElementById("taOutput").value += "Warning on line " + (line + 1) + " position " + position + ": " + msg + ".\n";
+    if(arguments.length == 3){
+    document.getElementById("taOutput").value += "Warning on line " + (line + 1) + " position " + (position + 1) + ": " + msg + ".\n";
+    } else{
+        document.getElementById("taOutput").value += "Warning: " + msg + ".\n";
+    }
 
     warningCount = warningCount + 1;
 } // End putwarningMessage
@@ -189,3 +193,21 @@ function getTerminal(key){
 
     return null;
 } // End getTerminal
+
+function symbolTableLookUp(symbol, scope){
+
+        while(scope >= 0){
+            for(var i in symbolTable){
+                if(i == (symbol+scope)){
+                    //Symbol found in symbolTable.
+                    var entry = JSON.parse(symbolTable[i]);
+
+                    return entry;
+
+                } // End if
+            } // End for
+            scope--;
+        } // End while
+
+        return false;
+}

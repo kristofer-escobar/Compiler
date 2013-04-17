@@ -43,7 +43,7 @@ function Parser(tokenStream){
 		//createSymbolTable();
 
 		// Report the results.
-		putMessage("Parsing found " + errorCount + " error(s).");
+		putMessage("Parsing found " + errorCount + " error(s)");
 
 	}; // End parse.
 

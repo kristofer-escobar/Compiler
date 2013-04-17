@@ -2,7 +2,7 @@
 // Keeps track of variable scope.
 
 function ScopeTree(){
-	var scopeLevel = -1;
+	var scopeLevel = 0;
 
 	this.rootNode = null;
 	this.currentScope = {};
@@ -58,7 +58,11 @@ this.buildSymbolTable = function() {
 				
 				// Add entries into symbol table.
 				symbolTable[node.entries[j].name + node.entries[j].scope] = JSON.stringify(node.entries[j]);
-				alert(symbolTable[node.entries[j].name+ node.entries[j].scope]);
+				//alert(symbolTable[node.entries[j].name+ node.entries[j].scope]);
+
+				if(!node.entries[j].isUsed){
+					putWarningMessage("Variable " + node.entries[j].name + " declared but never used");
+				}
 
 				traversalResult += 
 				"Name: " + node.entries[j].name + " " +
