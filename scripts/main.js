@@ -57,7 +57,10 @@ function run(){
                 // Display parse tree.
                 document.getElementById("parseTree").value = parser.tree.toString();
 
-                var ast = new AST(parser.tree.rootNode);
+                var ast = new AST(parser.tree);
+
+                //ast.build(parser.tree.rootNode,0);
+                var test = ast.toString();
 
                 document.getElementById("parseTree").value += "\n" + ast.toString();
 

@@ -1,37 +1,41 @@
 //ast.js
 
 function AST(CST) {
-this.rootNode = null;
-this.currentNode = {};
+var a = {};
+a.rootNode = null;
+a.currentNode = {};
+
+//this.rootNode = null;
+//this.currentNode = {};
 
 var scopeLevel = 0;
 
-this.addBranchNode = function(name){
+a.addBranchNode = function(name){
 	var node = {name: name, children: [], parent: {}};
 
-	if(!isRoot(this.rootNode)){
-		node.parent = this.currentNode;
+	if(!isRoot(a.rootNode)){
+		node.parent = a.currentNode;
 
 		// Add node to children.
-		this.currentNode.children.push(node);
+		a.currentNode.children.push(node);
 	} else{
-        this.rootNode = node;
+        a.rootNode = node;
     }//  End else.
 
-    this.currentNode = node;
+    a.currentNode = node;
 
 }; // End addBranchNode
 
-this.addLeafNode = function(name){
+a.addLeafNode = function(name){
 	var node = {name: name, children: [], parent: {}};
 
-	if(!isRoot(this.rootNode)){
-		node.parent = this.currentNode;
+	if(!isRoot(a.rootNode)){
+		node.parent = a.currentNode;
 
 		// Add node to children.
-		this.currentNode.children.push(node);
+		a.currentNode.children.push(node);
 	} else{
-        this.rootNode = node;
+        a.rootNode = node;
     }// End else.
 
 }; // End addLeafNode
@@ -45,10 +49,10 @@ function isRoot(root){
 	return false;
 } // End isRoot
 
-this.endChildren = function(){
+a.endChildren = function(){
 	// Move back to parent node.
-    if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)){
-        this.currentNode = this.currentNode.parent;
+    if ((a.currentNode.parent !== null) && (a.currentNode.parent.name !== undefined)){
+        a.currentNode = a.currentNode.parent;
     } else{
 		// Error
     } // End else
@@ -56,11 +60,12 @@ this.endChildren = function(){
 }; // End endChildren
 
 // Create a string representation of the tree.
-this.toString = function() {
+a.build = function() {
     var traversalResult = "";
 
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
+		var count = 0;
         // Space out nodes.
         // for (var i = 0; i < depth; i++){
         //     traversalResult += "-";
@@ -68,16 +73,33 @@ this.toString = function() {
 
         // Check for leaf nodes.
         if (!node.children || node.children.length === 0){
-            traversalResult +=  node.name + " ";
+            //traversalResult +=  node.name + " ";
             //traversalResult += "\n";
         }else{
 
+        if(node.name == "StatementList"){
+			a.addBranchNode("block");
+			count++;
+        }
+
+        // Create nodes for VarDecl
 		if(node.name == "VarDecl"){
-			//addBranchNode("declare");
+			varDecl(node);
+			return;
 		}
 
-		if(node.name == "id"){
+		if(node.name == "Statement"){
+			if(node.children[1]){
+				if(node.children[1].name == "="){
+					assign(node);
+					return;
+				}
+			}
+		}
 
+		if(node.name == "Print"){
+			print(node.children[2]);
+			return; // Move onto next subtree.
 		}
 
 		// Increase scope level.
@@ -92,10 +114,10 @@ this.toString = function() {
 
             // Recursive call to expand.
             for (var j = 0; j < node.children.length; j++){
-				// On the last child for a given node.
-				if(j == (node.children.length - 1)){
-					traversalResult += "\n";
-				}
+				// // On the last child for a given node.
+				// if(j == (node.children.length - 1)){
+				// traversalResult += "\n";
+				// }
 
                 expand(node.children[j], depth + 1);
             } //  End for
@@ -103,9 +125,92 @@ this.toString = function() {
     } // End toString
 
     // Initial call to expand.
-    expand(CST, 0);
+    expand(CST.rootNode, 0);
+
+    //return traversalResult;
+    };
+
+function print(node){
+//debugger;
+
+	a.addBranchNode("print");
+	expr(node);
+	a.endChildren();
+}
+function expr(node){
+	if(node.children[0].name == "IntExpr"){
+		intExpr(node.children[0]);
+	} else if(node.children[0].name == "CharExpr"){
+		charExpr(node.children[0]);
+	} else{
+		id(node.children[0]);
+	}
+}
+
+function intExpr(node){
+	if(node.children[1]){
+		if(node.children[1].name == "+" || node.children[1].name == "-"){
+			a.addBranchNode(node.children[1].name);
+			a.addLeafNode(node.children[0].name);
+			expr(node.children[2]);
+			a.endChildren();
+		}
+	} else{
+		a.addLeafNode(node.children[0].name);
+	}
+}
+
+
+function varDecl(node){
+	a.addBranchNode("declare");
+	a.addLeafNode(node.children[0].name); // get type.
+	a.addLeafNode(node.children[1].children[0].name); // get id.
+	a.endChildren();
+}
+
+function assign(node){
+a.addBranchNode("assign");
+a.addLeafNode(node.children[0].children[0].name);
+expr(node.children[2]);
+a.endChildren();
+}
+
+function Statement(node){
+
+}
+
+a.toString = function() {
+    var traversalResult = "";
+
+    // Recursive function to handle the expansion of the nodes.
+    function expand(node, depth){
+        // Space out nodes.
+        for (var i = 0; i < depth; i++){
+            traversalResult += "-";
+        } // End for
+
+        // Check for leaf nodes.
+        if (!node.children || node.children.length === 0){
+            traversalResult += "[" + node.name + "]";
+            traversalResult += "\n";
+        }else{
+            // Check for branch nodes.
+            traversalResult += "<" + node.name + "> \n";
+            // Recursive call to expand.
+            for (var j = 0; j < node.children.length; j++){
+                expand(node.children[j], depth + 1);
+            } //  End for
+        }// End else
+    } // End toString
+
+    // Initial call to expand.
+    expand(a.rootNode, 0);
 
     return traversalResult;
     };
+
+    a.build();
+
+    return a;
 
 }
