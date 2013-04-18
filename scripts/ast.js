@@ -5,9 +5,6 @@ var a = {};
 a.rootNode = null;
 a.currentNode = {};
 
-//this.rootNode = null;
-//this.currentNode = {};
-
 var scopeLevel = 0;
 
 a.addBranchNode = function(name){
@@ -114,11 +111,6 @@ a.build = function() {
 
             // Recursive call to expand.
             for (var j = 0; j < node.children.length; j++){
-				// // On the last child for a given node.
-				// if(j == (node.children.length - 1)){
-				// traversalResult += "\n";
-				// }
-
                 expand(node.children[j], depth + 1);
             } //  End for
         }// End else
@@ -126,9 +118,7 @@ a.build = function() {
 
     // Initial call to expand.
     expand(CST.rootNode, 0);
-
-    //return traversalResult;
-    };
+};
 
 function print(node){
 //debugger;

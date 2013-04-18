@@ -47,14 +47,15 @@ function run(){
 			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
 
 			document.getElementById("parseTree").value += "CONCRETE SYNTAX TREE: \n";
-                // Display parse tree.
-                document.getElementById("parseTree").value += "\n" + parser.tree.toString();
+			
+            // Display parse tree.
+            document.getElementById("parseTree").value += "\n" + parser.tree.toString();
 
-                var ast = new AST(parser.tree);
+            var ast = new AST(parser.tree);
 
-                document.getElementById("parseTree").value += "\n" + "ABSTRACT SYNTAX TREE: \n";
+            document.getElementById("parseTree").value += "\n" + "ABSTRACT SYNTAX TREE: \n";
 
-                document.getElementById("parseTree").value += "\n" + ast.toString();
+            document.getElementById("parseTree").value += "\n" + ast.toString();
 
             } // End if       
         } else{ // Parse errors were found. 

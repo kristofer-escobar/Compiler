@@ -31,15 +31,3 @@ function Identifier () {
     };
 
 }
-
-/*
- * Function to add an entry to the symbol table.
- */
-// function addToSymbolTable(name, address, value, type, isUsed, scope, lifetime, category, visibility){
-
-// 	var newIdentifier = new Identifier();
-
-// 	newIdentifier.create(name, address, value, type, isUsed, scope, lifetime, category, visibility);
-
-// 	symbolTable[newIdentifier.name] = newIdentifier;
-// }
