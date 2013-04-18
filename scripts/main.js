@@ -46,21 +46,13 @@ function run(){
 			// Display symbol table.
 			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
 
-			//var entry = symbolTableLookUp("a",1);
-
-			//alert(entry.value);
-
-			//putMessage(" and " + warningCount + " warning(s)");
-				
-                //document.getElementById("taSymbolTable").value += getSymbolTable() + "\n";
-
+			document.getElementById("parseTree").value += "CONCRETE SYNTAX TREE: \n";
                 // Display parse tree.
-                document.getElementById("parseTree").value = parser.tree.toString();
+                document.getElementById("parseTree").value += "\n" + parser.tree.toString();
 
                 var ast = new AST(parser.tree);
 
-                //ast.build(parser.tree.rootNode,0);
-                var test = ast.toString();
+                document.getElementById("parseTree").value += "\n" + "ABSTRACT SYNTAX TREE: \n";
 
                 document.getElementById("parseTree").value += "\n" + ast.toString();
 

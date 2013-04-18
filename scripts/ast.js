@@ -160,6 +160,9 @@ function intExpr(node){
 	}
 }
 
+function charExpr(node){
+	a.addLeafNode(node.children[1].name);
+}
 
 function varDecl(node){
 	a.addBranchNode("declare");
@@ -175,8 +178,8 @@ expr(node.children[2]);
 a.endChildren();
 }
 
-function Statement(node){
-
+function id(node){
+	a.addLeafNode(node.children[0].name);
 }
 
 a.toString = function() {
