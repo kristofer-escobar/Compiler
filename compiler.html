@@ -33,7 +33,8 @@
     </div>  
     <div class="buttons">
         <span class="whiteText">Click to compile.</span>
-        <input type="button" id="btnCompile" class="button" value="Compile" onclick="run();"/>
+        <input type="button" id="btnCompile" value="Compile" onclick="run();"/>
+        <input type="button" value="Reset" onClick="document.location.reload(true)">
         <div class="mode">
             Error Mode:
             <input name="mode" value="standard" checked="checked" onclick="setErrorMode('standard');" type="radio" id="standard">Standard

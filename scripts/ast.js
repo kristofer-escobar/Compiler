@@ -59,14 +59,10 @@ a.endChildren = function(){
 // Create a string representation of the tree.
 a.build = function() {
     var traversalResult = "";
-
+	
+	var count = 0;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
-		var count = 0;
-        // Space out nodes.
-        // for (var i = 0; i < depth; i++){
-        //     traversalResult += "-";
-        // } // End for
 
         // Check for leaf nodes.
         if (!node.children || node.children.length === 0){
@@ -75,8 +71,10 @@ a.build = function() {
         }else{
 
         if(node.name == "StatementList"){
-			a.addBranchNode("block");
-			count++;
+			if(node.children[0]){
+				//a.addBranchNode("block");
+				//count++;
+			}
         }
 
         // Create nodes for VarDecl
@@ -86,25 +84,44 @@ a.build = function() {
 		}
 
 		if(node.name == "Statement"){
+			//
+			//a.addBranchNode("block");
+
 			if(node.children[1]){
 				if(node.children[1].name == "="){
 					assign(node);
 					return;
 				}
+
+			// Increase scope level.
+
+			if(node.children[0] && node.children[2]){
+				if(node.children[0].name == "{" && node.children[2].name == "}"){
+				a.addBranchNode("block");
+				count++;
+				scopeLevel++;
+					if(node.children[1].name == "StatementList"){
+						if(!node.children[1].children[0]){
+							while(count !== 0){
+								a.endChildren();
+								count--;
+							}
+						}
+					}
+				}
 			}
+
+				//else if(node.children[1].name == "StatementList"){
+				//	a.addBranchNode("block");
+				//	count++;
+				//}
+			}
+			//a.endChildren();
 		}
 
 		if(node.name == "Print"){
 			print(node.children[2]);
 			return; // Move onto next subtree.
-		}
-
-		// Increase scope level.
-		if(node.mame == "{"){
-			scopeLevel++;
-		}
-		if(node.mame == "}"){
-			scopeLevel--;
 		}
 
 			traversalResult +=  node.name + " ";
@@ -177,6 +194,7 @@ a.toString = function() {
 
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
+		var scopeLevel = 1;
         // Space out nodes.
         for (var i = 0; i < depth; i++){
             traversalResult += "-";
@@ -187,6 +205,25 @@ a.toString = function() {
             traversalResult += "[" + node.name + "]";
             traversalResult += "\n";
         }else{
+
+			// Increase scope level.
+			if(node.mame == "{"){
+				scopeLevel++;
+			}
+			if(node.mame == "}"){
+				scopeLevel--;
+			}
+
+			// Not a statement list, lower scope level to 0.
+			if(depth === 0 && node.name !== "block"){
+				scopeLevel--;
+			}
+
+			// Do some type checking.
+			if(node.name == "assign"){
+				typeCheckAssign(node,scopeLevel);
+			}
+
             // Check for branch nodes.
             traversalResult += "<" + node.name + "> \n";
             // Recursive call to expand.
@@ -201,6 +238,49 @@ a.toString = function() {
 
     return traversalResult;
     };
+
+function typeCheckAssign(node, scopeLevel){
+	// Get the Identifer type.
+	var variable = symbolTableLookUp(node.children[0].name,scopeLevel);
+
+	// Get the type of value.
+	var compareType = "";
+
+	if(isDigit(node.children[1].name)){
+		compareType = "int";
+	} else if(isChar(node.children[1].name) || isCharList(node.children[1].name)){
+		compareType = "string";
+	} else if(isChar(node.children[1].name)){
+		compareType = "id";
+	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
+		compareType = typeCheckOps(node.children[1]);
+		}
+
+	if(variable.type != compareType){
+		putErrorMessage("Type mismatch: expected type '" +
+		variable.type + "', received type '" +
+		compareType + "'" , variable.token.line, variable.token.position);
+	}
+}
+
+function typeCheckOps(node){
+
+	var operand1 = node.children[0];
+	var operand2 = node.children[1];
+	var compareType = "";
+
+	if(isDigit(operand2.name)){
+		compareType = "int";
+	} else if(isChar(operand2.name) || isCharList(node.children[1].name)){
+		compareType = "string";
+	} else if(isChar(operand2.name)){
+		compareType = "id";
+	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
+		compareType = typeCheckOps(node.children[1]);
+	}
+		return compareType;
+}
+
 
     a.build();
 
