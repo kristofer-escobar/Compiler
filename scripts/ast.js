@@ -246,15 +246,25 @@ function typeCheckAssign(node, scopeLevel){
 	// Get the type of value.
 	var compareType = "";
 
-	if(isDigit(node.children[1].name)){
+	if(isDigit(variable.value)){
 		compareType = "int";
-	} else if(isChar(node.children[1].name) || isCharList(node.children[1].name)){
+	} else if(variable.value.charAt(0) == "\"" && variable.value.charAt(variable.value.length -1) == "\""){
 		compareType = "string";
-	} else if(isChar(node.children[1].name)){
-		compareType = "id";
+	} else if(isChar(node.children[1].name) && (node.children[1].name.length == 1)){
+		compareType = symbolTableLookUp(node.children[1].name,scopeLevel).type;
 	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
 		compareType = typeCheckOps(node.children[1]);
-		}
+	}
+
+	// if(isDigit(node.children[1].name)){
+	// compareType = "int";
+	// } else if(isChar(node.children[1].name) || isCharList(node.children[1].name)){
+	// compareType = "string";
+	// } else if(isChar(node.children[1].name)){
+	// compareType = "id";
+	// } else if(node.children[1].name == "+" || node.children[1].name == "-") {
+	// compareType = typeCheckOps(node.children[1]);
+	// }
 
 	if(variable.type != compareType){
 		putErrorMessage("Type mismatch: expected type '" +

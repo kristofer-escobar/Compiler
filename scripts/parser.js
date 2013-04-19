@@ -106,6 +106,10 @@ function Parser(tokenStream){
 
 			var tokenContent = getTokenContent(tokens, tokenValueStart, tokenValueEnd);
 
+			if(tokens[tokenIndex -1].value == "\"" && tokens[tokenIndex + 1].value == "\""){
+				tokenContent = "\"" + tokenContent + "\"";
+			}
+
 			// Store the value of the identifer.
 			if(scope.currentScope.entries[idenName]){
 				scope.currentScope.entries[idenName].value = tokenContent;

@@ -9,9 +9,9 @@ function ScopeTree(){
 
 	this.newScope = function(){
 		var node = {
-			name: scopeLevel++ , 
-			children: [], 
-			parent: {}, 
+			name: scopeLevel++ ,
+			children: [],
+			parent: {},
 			entries: {}
 		};
 
@@ -44,7 +44,7 @@ function ScopeTree(){
 		function expand(node){
 			// Check for branch nodes.
 			for(var j in node.entries){
-				
+
 				// Add entries into symbol table.
 				symbolTable[node.entries[j].name + node.entries[j].scope] = JSON.stringify(node.entries[j]);
 				//alert(symbolTable[node.entries[j].name+ node.entries[j].scope]);
@@ -53,11 +53,11 @@ function ScopeTree(){
 					putWarningMessage("Variable " + node.entries[j].name + " declared but never used");
 				}
 
-				traversalResult += 
+				traversalResult +=
 				"Name: " + node.entries[j].name + " " +
 				"Value: " + node.entries[j].value + " " +
-				"Type: " + node.entries[j].type + " " + 
-				"Scope: " + node.entries[j].scope + " " + 
+				"Type: " + node.entries[j].type + " " +
+				"Scope: " + node.entries[j].scope + " " +
 				"isUsed: " + node.entries[j].isUsed + "\n";
 			} // End for
 
@@ -72,7 +72,7 @@ function ScopeTree(){
 		expand(this.rootNode);
 
 		return traversalResult;
-		
+
     }; // End buildSymbolTable
 
 } // End ScopeTree
