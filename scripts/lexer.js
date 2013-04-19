@@ -152,9 +152,9 @@ function Lexer(){
                             continue;
                         } // End if
 
-                        if(currentCharacter !== " "){
+                        //if(currentCharacter !== " "){
                             charListValue = charListValue + currentCharacter;
-                        } // End if
+                        //} // End if
 
                         // Move to the next character.
                         characterPosition = characterPosition + 1;
