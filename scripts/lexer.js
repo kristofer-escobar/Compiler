@@ -166,9 +166,35 @@ function Lexer(){
 
                     continue;
                 } // End Quote check.
-
+//debugger;
                 // Check for terminals.
                 if(isTerminal(currentCharacter)){
+                    // Check if there is a lexeme attached to the terminal.
+                    if(characterPosition > lexemeStartPosition){
+                        currentLexeme = currentLine.slice(lexemeStartPosition, characterPosition);
+                        //alert(currentLexeme);
+                        var t_kind = checkLexicon(currentLexeme);
+
+                        if(t_kind !== null){
+                            //Found in lexicon.
+                            tokenize(t_kind,linePosition,characterPosition,currentLexeme, this.tokenStream);
+                        } else{
+                            if(isChar(currentLexeme)){
+                                // Found a characer.
+                                tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentLexeme, this.tokenStream);
+                            } // End else
+                            else if(isDigit(currentLexeme)){
+                                // Found a digit.
+                                tokenize(TOKEN_DIGIT,linePosition,characterPosition,currentLexeme, this.tokenStream);
+                            } else{
+                                // Unknown lexeme.
+                                putErrorMessage("Invalid token",linePosition,characterPosition);
+                            } // End else
+                        } // End else
+
+                        lexemeStartPosition = characterPosition + 1;
+                    }// End if
+
                     // Found a terminal.
                     tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter, this.tokenStream);
                     lexemeStartPosition = lexemeStartPosition + 1;
