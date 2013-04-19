@@ -269,6 +269,26 @@ function parseCharExpr(){
 
 function parseId(){
 	tree.addBranchNode("Id");
+	currentScope = scope.currentScope;
+	scopeFound = false;
+
+	// Check scopes until we are at the root.(No more parents)
+	while(scope.currentScope.parent && !scopeFound){
+		if(scope.currentScope.entries[currentToken["value"]]){
+			// Scope found, variable has been declared.
+			scopeFound = true;
+		} // End if
+
+		scope.currentScope = scope.currentScope.parent;
+	} // End  while.
+
+	if(!scopeFound){
+		putErrorMessage("Undeclared Identifier", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
+	} // End if
+
+	// Return back to current scope.
+	scope.currentScope = currentScope;
+
 
 	idName = currentToken.value;
 	match(TOKEN_IDENTIFIER);
