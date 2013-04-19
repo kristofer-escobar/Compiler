@@ -108,6 +108,24 @@ function Parser(tokenStream){
 
 			if(tokens[tokenIndex -1].value == "\"" && tokens[tokenIndex + 1].value == "\""){
 				tokenContent = "\"" + tokenContent + "\"";
+			}else if(isChar(tokenContent)){
+				scopeFound = false;
+			// Check scopes until we are at the root.(No more parents)
+				while(scope.currentScope.parent && !scopeFound){
+					if(scope.currentScope.entries[tokenContent]){
+						// Scope found, variable has been declared.
+						scopeFound = true;
+					} // End if
+
+					scope.currentScope = scope.currentScope.parent;
+				} // End  while.
+
+				if(!scopeFound){
+					putErrorMessage("Undeclared Identifier", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
+				} // End if
+
+				// Return back to current scope.
+				scope.currentScope = currentScope;
 			}
 
 			// Store the value of the identifer.
