@@ -22,6 +22,9 @@ function Parser(tokenStream){
 		// Grab the next token.
 		currentToken = getNextToken();
 
+		if(verboseMode){
+			putMessage("Creating first scope.");
+		}
 		// Add first scope.
 		scope.newScope();
 
@@ -48,6 +51,9 @@ function Parser(tokenStream){
 	}; // End parse.
 
 	function parseStatement(){
+	if(verboseMode){
+		putMessage("Adding Statement branch to parse tree.");
+	}
 		tree.addBranchNode("Statement");
 
 		if(currentToken.kind == TOKEN_PRINT){
@@ -120,6 +126,10 @@ function Parser(tokenStream){
 					scope.currentScope = scope.currentScope.parent;
 				} // End  while.
 
+				if(verboseMode){
+					putMessage("Checking for undeclared identifiers.");
+				}
+
 				if(!scopeFound){
 					putErrorMessage("Undeclared Identifier", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 				} // End if
@@ -172,6 +182,9 @@ function Parser(tokenStream){
 	} // End parseStatement.
 
 function parseStatementList(){
+	if(verboseMode){
+		putMessage("Adding StatementList branch to parse tree.");
+	}
 	tree.addBranchNode("StatementList");
 
 	if(currentToken.kind !== EOF && currentToken.kind !== TOKEN_CLOSE_CURLY_BRACE){
@@ -192,6 +205,9 @@ function parseStatementList(){
 } // End parseStatementList
 
 function parsePrint(){
+	if(verboseMode){
+		putMessage("Adding Print branch to parse tree.");
+	}
 	tree.addBranchNode("Print");
 
 	match(TOKEN_PRINT);
@@ -207,6 +223,10 @@ function parsePrint(){
 } // End parsePrint
 
 function parseExpr(){
+	if(verboseMode){
+		putMessage("Adding Expression branch to parse tree.");
+	}
+
 	tree.addBranchNode("Expression");
 
 	if(currentToken.kind == TOKEN_DIGIT){
@@ -233,7 +253,9 @@ function parseExpr(){
 } // End parseExpr
 
 function parseIntExpr(){
-//debugger;
+	if(verboseMode){
+		putMessage("Adding IntExpr branch to parse tree.");
+	}
 	tree.addBranchNode("IntExpr");
 
 	if(tokenIndex < tokens.length){
@@ -258,6 +280,9 @@ function parseIntExpr(){
 } // End parseIntExpr
 
 function parseCharExpr(){
+	if(verboseMode){
+		putMessage("Adding CharExpr branch to parse tree.");
+	}
 	tree.addBranchNode("CharExpr");
 
 	match(TOKEN_QUOTE);
@@ -268,6 +293,9 @@ function parseCharExpr(){
 } // End parseCharExpr
 
 function parseId(){
+	if(verboseMode){
+		putMessage("Adding Id branch to parse tree.");
+	}
 	tree.addBranchNode("Id");
 	currentScope = scope.currentScope;
 	scopeFound = false;
@@ -324,6 +352,9 @@ function parseVarDecl(){
 	if(!scope.currentScope.entries[currentToken["value"]]){
 		scope.currentScope.entries[currentToken["value"]] = id;
 	} else{
+		if(verboseMode){
+			putMessage("Checking for redeclared identifiers.");
+		}
 		// Redeclared identifer.
 		putErrorMessage("Redeclared identifer",currentToken.line, currentToken.position);
 	}
@@ -344,6 +375,9 @@ function match(expectedKind){
 
 		currentToken = getNextToken();
 	} else{
+		if(verboseMode){
+			putMessage("Found an unknown token kind.");
+		}
 		putErrorMessage("Expected a token of kind: " + expectedKind + " but got token of kind " + currentToken.kind + ".",currentToken.line, currentToken.position);
 	} // End else
 } // End match

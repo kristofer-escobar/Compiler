@@ -23,8 +23,8 @@ function run(){
     // If tokens is null then lex did not succeed.
     if(tokens !== null){
 		// Display errors and warning for lex.
-        putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");   
-        
+        putMessage("Lexer found " + warningCount + " warning(s)" + " and " + errorCount + " error(s).");
+
         // If there are no lex errors, then parse.
         if(!errorsFound){
 			// Create a string of the tokens returned by lex.
@@ -37,7 +37,7 @@ function run(){
             var parser = new Parser(tokens);
 
             // Begin parsing tokens.
-            parser.parse();   
+            parser.parse();
 
             // Check if parse produced any errors. 
             if(!errorsFound){
@@ -47,13 +47,21 @@ function run(){
 			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
 
 			document.getElementById("parseTree").value += "CONCRETE SYNTAX TREE: \n";
-			
+
+            if(verboseMode){
+                putMessage("Displaying concrete syntax tree.");
+            }
+
             // Display parse tree.
             document.getElementById("parseTree").value += "\n" + parser.tree.toString();
 
             var ast = new AST(parser.tree);
 
             document.getElementById("parseTree").value += "\n" + "ABSTRACT SYNTAX TREE: \n";
+
+            if(verboseMode){
+                putMessage("Displaying abstract syntax tree.");
+            }
 
             document.getElementById("parseTree").value += "\n" + ast.toString();
 

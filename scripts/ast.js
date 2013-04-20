@@ -58,6 +58,9 @@ a.endChildren = function(){
 
 // Create a string representation of the tree.
 a.build = function() {
+	if(verboseMode){
+        putMessage("Building Abtract syntax tree.");
+    }
     var traversalResult = "";
 
 	var count = 0;
@@ -248,7 +251,6 @@ function typeCheckAssign(node, scopeLevel){
 
 	// Get the type of value.
 	var compareType = "";
-debugger; 
 	if(isDigit(variable.value)){
 		compareType = "int";
 	} else if(variable.value.charAt(0) == "\"" && variable.value.charAt(variable.value.length -1) == "\""){
@@ -258,16 +260,6 @@ debugger;
 	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
 		compareType = typeCheckOps(node.children[1],scopeLevel);
 	}
-
-	// if(isDigit(node.children[1].name)){
-	// compareType = "int";
-	// } else if(isChar(node.children[1].name) || isCharList(node.children[1].name)){
-	// compareType = "string";
-	// } else if(isChar(node.children[1].name)){
-	// compareType = "id";
-	// } else if(node.children[1].name == "+" || node.children[1].name == "-") {
-	// compareType = typeCheckOps(node.children[1]);
-	// }
 
 	if(variable.type != compareType){
 		putErrorMessage("Type mismatch: expected type '" +
@@ -282,7 +274,7 @@ function typeCheckOps(node,scopeLevel){
 	var operand2 = node.children[1];
 	var compareType = "";
 	var variable ="";
-//debugger;
+
 	if(isDigit(operand2.name)){
 		compareType = "int";
 	} else if((operand2.name.charAt(0) == "\"") || (operand2.name.charAt(operand2.name.length-1) == "\"")){

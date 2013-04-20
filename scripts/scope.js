@@ -39,6 +39,9 @@ function ScopeTree(){
 
 	// Create a string representation of the tree.
 	this.buildSymbolTable = function() {
+		if(verboseMode){
+        putMessage("Building symbol table.");
+        }
 		var traversalResult = "";
 		// Recursive function to handle the expansion of the nodes.
 		function expand(node){

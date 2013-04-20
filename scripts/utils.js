@@ -58,12 +58,18 @@ function putWarningMessage(msg, line, position){
 function setErrorMode(mode){
     if(mode == 'verbose'){
         verboseMode = true;
+        if(verboseMode){
+        putMessage("Error mode set to verbose.");
+        }
     } else{
         verboseMode = false;
     } // End else
 } // End setErrorMode
 
 function checkLexicon(key){
+    if(verboseMode){
+        putMessage("Checking lexicon.");
+    }
     key = key.toUpperCase();
 
     for(var i in lexicon){
@@ -173,7 +179,9 @@ function getTerminal(key){
 } // End getTerminal
 
 function symbolTableLookUp(symbol, scope){
-
+        if(verboseMode){
+        putMessage("Checking symbol table for: '" + symbol + "''" );
+        }
         while(scope >= 0){
             for(var i in symbolTable){
                 if(i == (symbol+scope)){
