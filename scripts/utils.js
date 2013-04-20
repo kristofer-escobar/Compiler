@@ -37,8 +37,11 @@ function putMessage(msg, line, position){
 function putErrorMessage(msg, line, position){
     errorsFound = true;
 
+    if(arguments.length == 3){
     document.getElementById("taOutput").value += "Error on line " + (line + 1) + " position " + (position + 1) + ": " + msg + ".\n";
-
+    } else{
+        document.getElementById("taOutput").value += "Error: " + msg + ".\n";
+    }
     errorCount = errorCount + 1;
 } // End putErrorMessage
 

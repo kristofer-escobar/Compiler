@@ -59,7 +59,7 @@ a.endChildren = function(){
 // Create a string representation of the tree.
 a.build = function() {
     var traversalResult = "";
-	
+
 	var count = 0;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
@@ -223,6 +223,9 @@ a.toString = function() {
 			if(node.name == "assign"){
 				typeCheckAssign(node,scopeLevel);
 			}
+			if(node.name == "print"){
+				typeCheckOps(node.children[0], scopeLevel);
+			}
 
             // Check for branch nodes.
             traversalResult += "<" + node.name + "> \n";
@@ -245,7 +248,7 @@ function typeCheckAssign(node, scopeLevel){
 
 	// Get the type of value.
 	var compareType = "";
-
+debugger; 
 	if(isDigit(variable.value)){
 		compareType = "int";
 	} else if(variable.value.charAt(0) == "\"" && variable.value.charAt(variable.value.length -1) == "\""){
@@ -253,7 +256,7 @@ function typeCheckAssign(node, scopeLevel){
 	} else if(isChar(node.children[1].name) && (node.children[1].name.length == 1)){
 		compareType = symbolTableLookUp(node.children[1].name,scopeLevel).type;
 	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
-		compareType = typeCheckOps(node.children[1]);
+		compareType = typeCheckOps(node.children[1],scopeLevel);
 	}
 
 	// if(isDigit(node.children[1].name)){
@@ -273,21 +276,30 @@ function typeCheckAssign(node, scopeLevel){
 	}
 }
 
-function typeCheckOps(node){
+function typeCheckOps(node,scopeLevel){
 
 	var operand1 = node.children[0];
 	var operand2 = node.children[1];
 	var compareType = "";
-
+	var variable ="";
+//debugger;
 	if(isDigit(operand2.name)){
 		compareType = "int";
-	} else if(isChar(operand2.name) || isCharList(node.children[1].name)){
+	} else if((operand2.name.charAt(0) == "\"") || (operand2.name.charAt(operand2.name.length-1) == "\"")){
 		compareType = "string";
 	} else if(isChar(operand2.name)){
-		compareType = "id";
+		variable = symbolTableLookUp(operand2.name,scopeLevel);
+		compareType = variable.type;
 	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
 		compareType = typeCheckOps(node.children[1]);
 	}
+
+		if(compareType !== "int"){
+			putErrorMessage("Type mismatch: expected type '" +
+			"int" + "', received type '" +
+			compareType + "'");
+		}
+
 		return compareType;
 }
 
