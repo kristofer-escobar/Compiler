@@ -193,6 +193,7 @@ function id(node){
 }
 
 a.toString = function() {
+	//debugger;
     var traversalResult = "";
 
     // Recursive function to handle the expansion of the nodes.
@@ -226,9 +227,14 @@ a.toString = function() {
 			if(node.name == "assign"){
 				typeCheckAssign(node,scopeLevel);
 			}
+
 			if(node.name == "print"){
-				typeCheckOps(node.children[0], scopeLevel);
-			}
+				//debugger;
+				if(node.children[1]){
+					typeCheckOps(node.children[0], scopeLevel);
+
+				}
+							}
 
             // Check for branch nodes.
             traversalResult += "<" + node.name + "> \n";
