@@ -7,7 +7,7 @@
 
 var verboseMode = false;
 
-function run(){        
+function run(){
 	// Initialize variable and text areas.
     init();
 

@@ -195,10 +195,10 @@ function id(node){
 a.toString = function() {
 	//debugger;
     var traversalResult = "";
-
+var scopeLevel = 1;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
-		var scopeLevel = 1;
+
         // Space out nodes.
         for (var i = 0; i < depth; i++){
             traversalResult += "-";
@@ -218,6 +218,10 @@ a.toString = function() {
 				scopeLevel--;
 			}
 
+			if(node.name == "block"){
+				scopeLevel++;
+			}
+
 			// Not a statement list, lower scope level to 0.
 			if(depth === 0 && node.name !== "block"){
 				scopeLevel--;
@@ -225,6 +229,7 @@ a.toString = function() {
 
 			// Do some type checking.
 			if(node.name == "assign"){
+				//debugger;
 				typeCheckAssign(node,scopeLevel);
 			}
 

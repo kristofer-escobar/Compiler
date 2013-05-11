@@ -64,7 +64,7 @@ function Parser(tokenStream){
 			parsePrint();
 
 		} else if(currentToken.kind == TOKEN_IDENTIFIER){
-
+//debugger;
 			var idenName = currentToken.value;
 
 			// Save pointer to current scope.
@@ -107,15 +107,17 @@ function Parser(tokenStream){
 			} // End if
 
 			parseExpr();
-
+//debugger;
 			tokenValueEnd = tokenIndex;
 
 			var tokenContent = getTokenContent(tokens, tokenValueStart, tokenValueEnd);
 
 			if(tokens[tokenIndex -1].value == "\"" && tokens[tokenIndex + 1].value == "\""){
+
 				tokenContent = "\"" + tokenContent + "\"";
-			}else if(isChar(tokenContent)){
+			}else if(isChar(tokenContent)){ // Check if an identifier is being set to another identifier.
 				scopeFound = false;
+
 			// Check scopes until we are at the root.(No more parents)
 				while(scope.currentScope.parent && !scopeFound){
 					if(scope.currentScope.entries[tokenContent]){
@@ -138,10 +140,38 @@ function Parser(tokenStream){
 				scope.currentScope = currentScope;
 			}
 
+			scopeFound = false;
+
+			// Check scopes until we are at the root.(No more parents)
+				while(scope.currentScope.parent && !scopeFound){
+					if(scope.currentScope.entries[idenName]){
+						// Scope found, variable has been declared.
+						scopeFound = true;
+					} // End if
+					else{
+						scope.currentScope = scope.currentScope.parent;
+					}
+
+				} // End  while.
+
+				if(verboseMode){
+					putMessage("Checking for undeclared identifiers.");
+				}
+
+				if(!scopeFound){
+					putErrorMessage("Undeclared Identifier", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
+				} // End if
+
 			// Store the value of the identifer.
 			if(scope.currentScope.entries[idenName]){
 				scope.currentScope.entries[idenName].value = tokenContent;
 				scope.currentScope.entries[idenName].isUsed = true;
+								// Return back to current scope.
+				scope.currentScope = currentScope;
+			}
+			else
+			{
+				putErrorMessage("Error initializing variable");
 			}
 
 
@@ -348,7 +378,8 @@ function parseVarDecl(){
 	// Set token
 	id.token = currentToken;
 
-	// Add entry into symbol table, if it doesn't already exist.
+
+	// Add entry into symbol table, if it doesn't already exist in the current scope.
 	if(!scope.currentScope.entries[currentToken["value"]]){
 		scope.currentScope.entries[currentToken["value"]] = id;
 	} else{
