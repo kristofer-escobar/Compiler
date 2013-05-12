@@ -166,7 +166,7 @@ function Parser(tokenStream){
 			if(scope.currentScope.entries[idenName]){
 				scope.currentScope.entries[idenName].value = tokenContent;
 				scope.currentScope.entries[idenName].isUsed = true;
-								// Return back to current scope.
+				// Return back to current scope.
 				scope.currentScope = currentScope;
 			}
 			else
@@ -203,6 +203,12 @@ function Parser(tokenStream){
 			match(TOKEN_CLOSE_CURLY_BRACE);
 
 			scope.endScope();
+		} else if(currentToken.kind == TOKEN_WHILE){
+			//debugger;
+			parseWhileStatement();
+
+		} else if(currentToken.kind == TOKEN_IF){
+			parseIfStatement();
 		} else{
 			// Found unknown statement.
 			putErrorMessage("Unknown statement", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
@@ -210,6 +216,89 @@ function Parser(tokenStream){
 
 		tree.endChildren();
 	} // End parseStatement.
+
+function parseWhileStatement(){
+//debugger;
+	tree.addBranchNode("WhileLoop");
+
+	match(TOKEN_WHILE);
+
+	if(verboseMode){
+		putMessage("Parsing boolean expression.");
+	} // End if
+
+	parseBooleanExpr();
+
+	match(TOKEN_OPEN_CURLY_BRACE);
+
+	// Add new entry into a symbol table.
+	scope.newScope();
+
+	if(verboseMode){
+		putMessage("Parsing statement list.");
+	} // End if
+//debugger;
+	parseStatementList();
+
+	match(TOKEN_CLOSE_CURLY_BRACE);
+
+	scope.endScope();
+
+	tree.endChildren();
+}
+
+function parseIfStatement(){
+
+	tree.addBranchNode("IfStatement");
+
+	match(TOKEN_IF);
+
+	if(verboseMode){
+		putMessage("Parsing boolean expression.");
+	} // End if
+
+	parseBooleanExpr();
+
+	match(TOKEN_OPEN_CURLY_BRACE);
+
+	// Add new entry into a symbol table.
+	scope.newScope();
+
+	if(verboseMode){
+		putMessage("Parsing statement list.");
+	} // End if
+
+	parseStatementList();
+
+	match(TOKEN_CLOSE_CURLY_BRACE);
+
+	scope.endScope();
+
+	tree.endChildren();
+}
+
+function parseBooleanExpr(){
+
+	tree.addBranchNode("BoolExpr");
+
+	// Match the pattern for testing for equality.
+	if(currentToken.kind == TOKEN_OPEN_PARENTHESIS){
+		match(TOKEN_OPEN_PARENTHESIS);
+
+		parseExpr();
+
+		match(TOKEN_EQUALITY);
+
+		parseExpr();
+
+		match(TOKEN_CLOSE_PARENTHESIS);
+	} else{ // Match the pattern for a boolval.
+		match(TOKEN_BOOLEAN);
+	}
+
+	tree.endChildren();
+
+}
 
 function parseStatementList(){
 	if(verboseMode){

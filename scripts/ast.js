@@ -127,6 +127,18 @@ a.build = function() {
 			return; // Move onto next subtree.
 		}
 
+		if(node.name == "WhileLoop"){
+			debugger;
+			whileLoop(node);
+			return;
+		}
+
+		if(node.name == "IfStatement"){
+			ifStatement(node);
+			return;
+		}
+
+
 			traversalResult +=  node.name + " ";
 
             // Recursive call to expand.
@@ -140,8 +152,76 @@ a.build = function() {
     expand(CST.rootNode, 0);
 };
 
+function whileLoop(node){
+	a.addBranchNode("while");
+
+	// Handle the boolean expression of the while expression.
+	boolExpr(node.children[1]);
+
+	// Handle the statement list inside the while loop.
+	var stmtLst = node.children[3];
+
+	var stmt = stmtLst.children[0];
+
+	var expr = stmt.children[0];
+
+	if(expr.name == "Print"){
+		debugger;
+		print(expr.children[2]);
+	} else if (expr.name == "Statement"){
+		// Handle nested statements inside a while loop.
+		if(expr.children[1]){
+			if(expr.children[1].name == "="){
+				assign(expr);
+			}
+		}
+	} else if(expr.name == "VarDecl"){
+		varDecl(expr);
+	} else if(expr.name == "WhileLoop"){
+		whileLoop(expr);
+	} else if(expr.name == "IfStatement"){
+		ifStatement(expr);
+	} else
+	{
+		// Unknown expression.
+	}
+
+	a.endChildren();
+
+}
+
+function ifStatement(node){
+	a.addBranchNode("if");
+
+	a.endChildren();
+}
+
+function boolExpr(node){
+	//a.addBranchNode("BoolExpr");
+
+	if(node.children[0].name == "("){
+		equality(node);
+	}else
+	{
+		id(node);
+	}
+
+	//a.endChildren();
+}
+ 
+function equality(node){
+	a.addBranchNode("equality");
+
+	// Handle each expression in the boolean expression.
+	expr(node.children[1]);
+	expr(node.children[3]);
+
+	a.endChildren();
+
+}
+
 function print(node){
-//debugger;
+debugger;
 
 	a.addBranchNode("print");
 	expr(node);

@@ -32,7 +32,6 @@ function Lexer(){
         if(sourceCode.indexOf(EOF) != sourceCode.length - 1){
             putWarningMessage("All content after EOF symbol will be disregarded",(lineEndPosition-1), sourceLines[lineEndPosition-1].indexOf(EOF)+1);
         } // End if
-
         // Iterate through each line.
         for(var linePosition = 0; linePosition < lineEndPosition; linePosition++){
             // Store the current working line.
@@ -53,7 +52,7 @@ function Lexer(){
             for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
                 // Store the current working characterPosition.
                 var currentCharacter = currentLine[characterPosition];
-   // debugger;
+    //debugger;
                 //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
                 if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                     if(currentCharacter == EOF){ // Reached end of file.
@@ -225,6 +224,22 @@ function Lexer(){
 
                         lexemeStartPosition = characterPosition + 1;
                     }// End if
+
+                    if(currentCharacter == "="){
+                        //debugger;
+                        var nextCharacter = currentLine[characterPosition + 1];
+                        if(nextCharacter == "=" ){
+                            var tempTerminal = getTerminal(currentCharacter + "=");
+                            // Found the equality operator, which is not to be confused with the equal siqn.
+                            tokenize(tempTerminal,linePosition,characterPosition,currentCharacter + "=", this.tokenStream);
+
+                            // Move up two characters.
+                            characterPosition = characterPosition + 1;
+
+                            lexemeStartPosition = lexemeStartPosition + 2;
+                            continue;
+                        }
+                    } 
 
                     // Found a terminal.
                     tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter, this.tokenStream);
