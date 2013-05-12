@@ -239,7 +239,7 @@ function Lexer(){
                             lexemeStartPosition = lexemeStartPosition + 2;
                             continue;
                         }
-                    } 
+                    }
 
                     // Found a terminal.
                     tokenize(getTerminal(currentCharacter),linePosition,characterPosition,currentCharacter, this.tokenStream);
@@ -249,7 +249,8 @@ function Lexer(){
                     // peek ahead one character.
                     if((characterPosition + 1) < currentLine.length){
                         var nextCharacter = currentLine[characterPosition + 1];
-                        if((!isChar(nextCharacter) || isTerminal(nextCharacter)) && ((characterPosition - lexemeStartPosition) <= 1)) {
+                        var prevCharacter = currentLine[characterPosition - 1];
+                        if(((!isChar(nextCharacter) && !isChar(prevCharacter)) || isTerminal(nextCharacter)) && ((characterPosition - lexemeStartPosition) <= 1)) {
                             // Found a characer.
                             tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter, this.tokenStream);
                             lexemeStartPosition = lexemeStartPosition + 1;

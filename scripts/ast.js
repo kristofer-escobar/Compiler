@@ -128,7 +128,7 @@ a.build = function() {
 		}
 
 		if(node.name == "WhileLoop"){
-			debugger;
+			//debugger;
 			whileLoop(node);
 			return;
 		}
@@ -165,8 +165,8 @@ function whileLoop(node){
 
 	var expr = stmt.children[0];
 
-	if(expr.name == "Print"){
-		debugger;
+	if(expr.name == "Print"){ // Tested.
+		//debugger;
 		print(expr.children[2]);
 	} else if (expr.name == "Statement"){
 		// Handle nested statements inside a while loop.
@@ -175,7 +175,7 @@ function whileLoop(node){
 				assign(expr);
 			}
 		}
-	} else if(expr.name == "VarDecl"){
+	} else if(expr.name == "VarDecl"){ //Tested
 		varDecl(expr);
 	} else if(expr.name == "WhileLoop"){
 		whileLoop(expr);
@@ -193,6 +193,37 @@ function whileLoop(node){
 function ifStatement(node){
 	a.addBranchNode("if");
 
+	// Handle the boolean expression of the while expression.
+	boolExpr(node.children[1]);
+
+	// Handle the statement list inside the while loop.
+	var stmtLst = node.children[3];
+
+	var stmt = stmtLst.children[0];
+
+	var expr = stmt.children[0];
+
+	if(expr.name == "Print"){ // Tested.
+		//debugger;
+		print(expr.children[2]);
+	} else if (expr.name == "Statement"){
+		// Handle nested statements inside a while loop.
+		if(expr.children[1]){
+			if(expr.children[1].name == "="){
+				assign(expr);
+			}
+		}
+	} else if(expr.name == "VarDecl"){ //Tested
+		varDecl(expr);
+	} else if(expr.name == "WhileLoop"){
+		whileLoop(expr);
+	} else if(expr.name == "IfStatement"){
+		ifStatement(expr);
+	} else
+	{
+		// Unknown expression.
+	}
+
 	a.endChildren();
 }
 
@@ -208,7 +239,7 @@ function boolExpr(node){
 
 	//a.endChildren();
 }
- 
+
 function equality(node){
 	a.addBranchNode("equality");
 
@@ -221,7 +252,7 @@ function equality(node){
 }
 
 function print(node){
-debugger;
+//debugger;
 
 	a.addBranchNode("print");
 	expr(node);
