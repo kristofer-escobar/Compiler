@@ -11,7 +11,7 @@ this.add = function(name){
 	var count = this.count++;
 
 	var entry = {
-		temp: "T" + count + "XX",
+		temp: "T" + count + " XX",
 		variable: name,
 		address: this.address
 	};
@@ -21,7 +21,7 @@ this.add = function(name){
 		this.table[name] = entry;
 	}
 
-	this.address++;
+	//this.address++;
 
 };
 

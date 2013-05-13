@@ -368,7 +368,7 @@ var scopeLevel = 1;
     };
 
 function typeCheckAssign(node, scopeLevel){
-debugger;
+//debugger;
 
 	// Get the Identifer type.
 	var variable = symbolTableLookUp(node.children[0].name,scopeLevel);

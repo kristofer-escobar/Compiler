@@ -18,13 +18,6 @@ function addCode(code){
 cg.code += code + " ";
 } // End addCode
 
-
-function backPatchJump(code){
-for(var i in cg.jumpTable){
-
-}
-}
-
 // Function to generate code.
 // Create a string representation of the tree.
 cg.generate = function() {
@@ -86,6 +79,7 @@ cg.generate = function() {
 			// // Branch on not equal.
 			// addCode("DO " + jump);
 			if_statement(node);
+			return;
 		}
 
 
@@ -104,22 +98,33 @@ cg.generate = function() {
     // End program.
     addCode("00");
 
+    // Make into an array.
+    cg.code = cg.code.split(" ");
+
+    // Back patch jumps.
+    backPatchJump();
+
+    // Back patch static variables.
+    backPatch();
+
 }; // End generate
 
 // Return code generated.
 cg.toString = function() {
-	return cg.code;
+	return cg.code.join(" ");
 };
 
 
 function if_statement(node){
+	var jump = "";
+//debugger;
 	// Handle condition.
 	if(node.children[0].name == "equality"){
-		equality(node);
+		jump = equality(node.children[0]);
 	} else if(node.children[0].name == "true"){
-		makeTrue();
+		jump = makeTrue();
 	} else if (node.children[0].name == "false"){
-		makeFalse();
+		jump = makeFalse();
 	}
 
 	// Handle expression.
@@ -135,14 +140,39 @@ function if_statement(node){
 
 	// Add jump offset.
 	// add a J0 meta symbol to determine where the expr ends. Then calculate the jump offset.
+
+	//debugger;
+
+	// Calculate jump offset.
+	var codeArray = cg.code.split(" ");
+
+	var jumpStartIndex = codeArray.indexOf(jump);
+
+	var jumpEndIndex = codeArray.length - 1;
+
+	var jumpOffset = jumpEndIndex - jumpStartIndex;
+
+	// Add jump offset to jump table.
+	cg.jumpTable.table[jump].address = jumpOffset;
+
+	//alert(cg.jumpTable.table[jump].address);
+
+//addCode();
+
 }
 
 function makeTrue(){
-	addCode("AE 10 00 EC 10 00");
+	var jump = cg.jumpTable.add();
+	addCode("AE 10 00 EC 10 00 D0 " + jump);
+
+	return jump;
 }
 
 function makeFalse(){
-	addCode("AE 00 00 EC 01 00");
+	var jump = cg.jumpTable.add();
+	addCode("AE 00 00 EC 01 00 D0 " + jump);
+
+	return jump;
 }
 
 function equality(node){
@@ -156,8 +186,12 @@ function equality(node){
 		// Add entry into the static table.
 		var jump = cg.jumpTable.add();
 		// Branch on not equal.
-		addCode("DO " + jump);
+		addCode("D0 " + jump);
+
+		return jump;
 	}
+
+
 }
 
 function declare(node){
@@ -198,7 +232,65 @@ function assign(node){
 
 	// Store the accumulator in memory.
 	addCode("8D " + cg.staticTable.table[node.children[0].name].temp);
+
 }
+
+function backPatch(){
+//var codeArray = cg.code.split(" ");
+
+var staticTableStart = (cg.code.length - 1).toString(16);
+debugger;
+//alert(staticTableStart);
+for(var i in cg.staticTable.table){
+	//alert(cg.staticTable.table[i].temp);
+
+	var littleEndian = cg.staticTable.table[i].temp.substring(0,2);
+
+	for(var j = 0; j < cg.code.length; j++)
+	{
+		if(cg.code[j] == littleEndian){
+			cg.code[j] = staticTableStart.toUpperCase();
+
+			cg.code[j+1] = "00";
+		}
+
+	}
+
+	//cg.code[cg.code.indexOf(littleEndian)] = staticTableStart.toUpperCase();
+
+	// Convert to decimal and add one.
+	staticTableStart = parseInt(staticTableStart, 16) + 1;
+
+	// Convert to hex.
+	staticTableStart = staticTableStart.toString(16);
+
+	//alert(cg.code);
+
+
+}
+
+
+
+}
+
+
+function backPatchJump(){
+//var codeArray = cg.code.split(" ");
+//debugger;
+for(var i in cg.jumpTable.table){
+
+	var offset = cg.jumpTable.table[i].address;
+
+	// Prepend a zero.
+	if(offset.toString().length == 1){
+		cg.code[cg.code.indexOf(i)] = "0" + offset;
+	} else{
+		cg.code[cg.code.indexOf(i)] = offset;
+	}
+
+}
+}
+
 
 function print(node){
 	//addCode("print");

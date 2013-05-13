@@ -16,8 +16,8 @@ this.add = function(){
 	};
 
 	// If the entry doenst already exist, then add it.
-	if(!this.table[name]){
-		this.table[name] = entry;
+	if(!this.table[entry.temp]){
+		this.table[entry.temp] = entry;
 	}
 
 	this.address++;
