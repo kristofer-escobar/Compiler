@@ -49,8 +49,8 @@ h2 {
 	font-family: Helvetica, Verdana, Arial, sans-serif;
 	font-size: 10pt;
 	position:absolute;
-	left:500px;
-	top:50px;
+	left:700px;
+	top:70px;
     text-align: center;
     padding: 5px;
     margin-left: auto;
@@ -78,4 +78,10 @@ h2 {
 	display: inherit;
 	text-indent: 100px;
 
+}
+
+.codeGen {
+	position:absolute;
+	left:600px;
+	bottom:12px;
 }

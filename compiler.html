@@ -46,12 +46,15 @@
     <div class="textAreas"><br><br>
         <div class="left">
             <textarea id="taSourceCode" cols="60" rows="15" placeholder="Enter source code here."></textarea>
-            <textarea id="parseTree" cols="60" rows="15" placeholder="Parse Tree will be shown here."></textarea>
+            <textarea id="parseTree" cols="60" rows="15" placeholder="Concrete Syntax Tree will be shown here."></textarea>
+            <textarea id="ASTTree" cols="60" rows="15" placeholder="Abstract Syntax Tree will be shown here."></textarea>
         </div>
         <div class="right">
             <textarea id="taOutput" cols="60" rows="15" placeholder="Output will be shown here."></textarea>
             <textarea id="taSymbolTable" cols="60" rows="15" placeholder="Symbol table will be shown here."></textarea>
+            <textarea id="taCodeGen" cols="60" rows="15" placeholder="Generated code will be shown here."></textarea>
         </div>
+
     </div>
     <!-- Footer -->
 
@@ -64,6 +67,9 @@
     <script type="text/javascript" src="scripts/ast.js"></script>
     <script type="text/javascript" src="scripts/globals.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>	
+    <script type="text/javascript" src="scripts/staticTable.js"></script>
+    <script type="text/javascript" src="scripts/jumpTable.js"></script>
+    <script type="text/javascript" src="scripts/codeGen.js"></script>
     <script type="text/javascript" src="scripts/lexer.js"></script>	
     <script type="text/javascript" src="scripts/parser.js"></script> 
     <script type="text/javascript" src="scripts/main.js"></script>

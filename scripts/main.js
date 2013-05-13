@@ -44,7 +44,9 @@ function run(){
 			// Create AST
 
 			// Display symbol table.
-			document.getElementById("taSymbolTable").value +=  parser.scope.buildSymbolTable();
+            document.getElementById("taSymbolTable").value += "SYMBOL TABLE: \n";
+
+			document.getElementById("taSymbolTable").value += "\n" + parser.scope.buildSymbolTable();
 
 			document.getElementById("parseTree").value += "CONCRETE SYNTAX TREE: \n";
 
@@ -57,13 +59,19 @@ function run(){
 //debugger;
             var ast = new AST(parser.tree);
 
-            document.getElementById("parseTree").value += "\n" + "ABSTRACT SYNTAX TREE: \n";
+            document.getElementById("ASTTree").value += "ABSTRACT SYNTAX TREE: \n";
 
             if(verboseMode){
                 putMessage("Displaying abstract syntax tree.");
             }
 
-            document.getElementById("parseTree").value += "\n" + ast.toString();
+            document.getElementById("ASTTree").value += "\n" + ast.toString();
+
+            var codeGen = new CodeGeneration(ast);
+
+            document.getElementById("taCodeGen").value += "CODE GENERATED: \n";
+
+            document.getElementById("taCodeGen").value += "\n" + codeGen.toString();
 
             } // End if       
         } else{ // Parse errors were found. 
