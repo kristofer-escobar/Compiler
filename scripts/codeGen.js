@@ -13,6 +13,8 @@ cg.code = [];
 
 var addIndex = 0;
 
+var endIndex = 255;
+
 // Fill with zeroes.
 function initCode(){
 for(var i = 0; i < 256; i++){
@@ -46,7 +48,21 @@ addIndex++;
 
 } // End addCode
 
+function putString(string){
 
+// Null terminated string.
+cg.code[endIndex] = "00";
+endIndex--;
+
+var temp = string.split("");
+
+temp.reverse();
+
+for(var i = 0; i < temp.length ; i++){
+cg.code[endIndex] = temp[i].charCodeAt(0).toString(16).toUpperCase();
+endIndex--;
+}
+}
 
 
 // Function to generate code.
@@ -173,7 +189,7 @@ cg.generate = function() {
 
 // Return code generated.
 cg.toString = function() {
-	alert(cg.code);
+	//alert(cg.code);
 	return cg.code.join(" ");
 };
 
@@ -220,7 +236,7 @@ function if_statement(node){
 
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
 
-	alert(jumpOffset);
+	//alert(jumpOffset);
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
@@ -309,7 +325,9 @@ function assign(node){
 		// Load the accumulator with the value.
 		addCode("A9 " + tempVal);
 	}else{
-
+		//alert(tempVal);
+		putString(tempVal);
+		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
 	}
 
 	// Store the accumulator in memory.
@@ -382,8 +400,18 @@ function print(node){
 	// Load the Y-register from memory.
 	addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
+	var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
+
+	//alert(temp.type);
+
+	if(temp.type == "string"){
+	// Load the X-register with a constant.
+	addCode("A2 02");
+	}else{
 	// Load the X-register with a constant.
 	addCode("A2 01");
+	}
+
 
 	// System call.
 	addCode("FF");
