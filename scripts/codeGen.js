@@ -8,6 +8,8 @@ function CodeGeneration(AST){
 var cg = {};
 cg.code = "";
 var instrCount = 0;
+var scopes = [];
+
 // Create a static table.
 cg.staticTable = new StaticTable();
 
@@ -31,21 +33,49 @@ cg.generate = function() {
 	var count = 0;
 
 	var scopeLevel = 0;
+
+
+
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
 
         // Check for leaf nodes.
         if (!node.children || node.children.length === 0){
-            //traversalResult +=  node.name + " ";
-            //traversalResult += "\n";
+			if(node.name == "{"){
+				scopeLevel++;
+			}
+
+			if(node.name == "}"){
+				scopeLevel--;
+			}
         } // End If
+		//alert(depth);
+
+
+		if(scopes.length > 0){
+	        if(scopes[scopes.length - 1].depth == depth){
+	        	//alert("Popping ..");
+	        	scopes.pop();
+	        }
+		}
+
+
 
         // Keep Track of scope.
         if(node.name == "block"){
+        	//alert("Adding ..");
 			scopeLevel++;
+
+			var scopeObj = { scope: scopeLevel,
+							depth: depth };
+
+			scopes.push(scopeObj);
+
+
         }
 
         if(node.name == "declare"){
+        	//alert("scope is: " + scopes[scopes.length - 1].scope);
 			declare(node);
         }
 
@@ -201,6 +231,8 @@ function equality(node){
 }
 
 function declare(node){
+//alert("scope is: " + scopes[scopes.length - 1].scope);
+
 	// Add entry into the static table.
 	cg.staticTable.add(node.children[1].name);
 
