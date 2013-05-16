@@ -46,7 +46,7 @@ cg.generate = function() {
         }
 
         if(node.name == "declare"){
-        	declare(node);
+			declare(node);
         }
 
 		if(node.name == "assign"){
@@ -179,9 +179,15 @@ function equality(node){
 	if(node.parent.name == "if"){
 		// Load the X-register from memory.
 		addCode("AE " + cg.staticTable.table[node.children[0].name].temp);
+//debugger;
+		if(isChar(node.children[1].name)){
+			// Compare memory to the X-register, set z-flag if equal.
+			addCode("EC " + cg.staticTable.table[node.children[1].name].temp);
+		} else if(isDigit(node.children[1].name)){
 
-		// Compare memory to the X-register, set z-flag if equal.
-		addCode("EC " + cg.staticTable.table[node.children[1].name].temp);
+		}
+
+
 
 		// Add entry into the static table.
 		var jump = cg.jumpTable.add();
@@ -239,7 +245,7 @@ function backPatch(){
 //var codeArray = cg.code.split(" ");
 
 var staticTableStart = (cg.code.length - 1).toString(16);
-debugger;
+//debugger;
 //alert(staticTableStart);
 for(var i in cg.staticTable.table){
 	//alert(cg.staticTable.table[i].temp);

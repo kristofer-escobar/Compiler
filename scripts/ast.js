@@ -66,19 +66,23 @@ a.build = function() {
 	var count = 0;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
-
+//debugger;
         // Check for leaf nodes.
         if (!node.children || node.children.length === 0){
             //traversalResult +=  node.name + " ";
             //traversalResult += "\n";
+        if(node.name == "}"){
+			//if(!node.children[0]){
+				//while(count !== 0){
+					a.endChildren();
+					//count--;
+				//}
+			//}
+        }
+
         }else{
 
-        if(node.name == "StatementList"){
-			if(node.children[0]){
-				//a.addBranchNode("block");
-				//count++;
-			}
-        }
+
 
         // Create nodes for VarDecl
 		if(node.name == "VarDecl"){
