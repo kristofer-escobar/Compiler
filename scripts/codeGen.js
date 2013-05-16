@@ -6,7 +6,21 @@ function CodeGeneration(AST){
 
 // Instance of a code generator.
 var cg = {};
-cg.code = "";
+
+//cg.code = "";
+
+cg.code = [];
+
+var addIndex = 0;
+
+// Fill with zeroes.
+function initCode(){
+for(var i = 0; i < 256; i++){
+	cg.code[i] = "00";
+}
+
+}
+
 var instrCount = 0;
 var scopes = [];
 
@@ -17,12 +31,30 @@ cg.staticTable = new StaticTable();
 cg.jumpTable = new JumpTable();
 
 function addCode(code){
-cg.code += code + " ";
+
+
+//cg.code += code + " ";
+
+//debugger;
+var temp = code.split(" ");
+
+for(var i = 0; i < temp.length ; i++){
+cg.code[addIndex] = temp[i];
+addIndex++;
+}
+//cg.code = cg.code.concat(temp);
+
 } // End addCode
+
+
+
 
 // Function to generate code.
 // Create a string representation of the tree.
 cg.generate = function() {
+
+	initCode();
+	//alert("cleared");
 
 	if(verboseMode){
         putMessage("Generating code.");
@@ -129,7 +161,7 @@ cg.generate = function() {
     addCode("00");
 
     // Make into an array.
-    cg.code = cg.code.split(" ");
+    //cg.code = cg.code.split(" ");
 
     // Back patch jumps.
     backPatchJump();
@@ -141,6 +173,7 @@ cg.generate = function() {
 
 // Return code generated.
 cg.toString = function() {
+	alert(cg.code);
 	return cg.code.join(" ");
 };
 
@@ -174,13 +207,20 @@ function if_statement(node){
 	//debugger;
 
 	// Calculate jump offset.
-	var codeArray = cg.code.split(" ");
+	//var codeArray = cg.code.split(" ");
+
+	var codeArray = cg.code;
 
 	var jumpStartIndex = codeArray.indexOf(jump);
 
-	var jumpEndIndex = codeArray.length - 1;
+	//var jumpEndIndex = codeArray.length - 1;
+
+	var jumpEndIndex = addIndex;
+
 
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
+
+	alert(jumpOffset);
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
@@ -208,11 +248,11 @@ function makeFalse(){
 function equality(node){
 	if(node.parent.name == "if"){
 		// Load the X-register from memory.
-		addCode("AE " + cg.staticTable.table[node.children[0].name].temp);
+		addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 //debugger;
 		if(isChar(node.children[1].name)){
 			// Compare memory to the X-register, set z-flag if equal.
-			addCode("EC " + cg.staticTable.table[node.children[1].name].temp);
+			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
 		} else if(isDigit(node.children[1].name)){
 
 		}
@@ -234,13 +274,15 @@ function declare(node){
 //alert("scope is: " + scopes[scopes.length - 1].scope);
 
 	// Add entry into the static table.
-	cg.staticTable.add(node.children[1].name);
+	//cg.staticTable.add(node.children[1].name);
+
+	cg.staticTable.add(node.children[1].name, scopes[scopes.length - 1].scope);
 
 	// Load the accumulator with zero.
 	addCode("A9 00");
 
 	// Store the accumulator into memory.
-	addCode("8D " + cg.staticTable.table[node.children[1].name].temp);
+	addCode("8D " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
 
 	//alert(node.children[1].name);
 	//alert(cg.staticTable.table[node.children[1].name].temp + " " + cg.staticTable.table[node.children[1].name].variable + " " + cg.staticTable.table[node.children[1].name].address);
@@ -257,8 +299,8 @@ function assign(node){
 		//tempVal = symbolTableLookUp(tempVal, scopeLevel).value;
 
 		// Load the accumulator from memory.
-		addCode("AD " + cg.staticTable.table[tempVal].temp);
-	} else{
+		addCode("AD " + cg.staticTable.table[tempVal + scopes[scopes.length - 1].scope].temp);
+	} else if(isDigit(tempVal)){
 		// If the value is a single digit prepend a zero.
 		if(tempVal.length == 1){
 			tempVal = "0" + tempVal;
@@ -266,17 +308,21 @@ function assign(node){
 
 		// Load the accumulator with the value.
 		addCode("A9 " + tempVal);
+	}else{
+
 	}
 
 	// Store the accumulator in memory.
-	addCode("8D " + cg.staticTable.table[node.children[0].name].temp);
+	addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
 }
 
 function backPatch(){
 //var codeArray = cg.code.split(" ");
 
-var staticTableStart = (cg.code.length - 1).toString(16);
+//var staticTableStart = (cg.code.length - 1).toString(16);
+
+var staticTableStart = (addIndex).toString(16);
 //debugger;
 //alert(staticTableStart);
 for(var i in cg.staticTable.table){
@@ -334,7 +380,7 @@ function print(node){
 	//addCode("print");
 
 	// Load the Y-register from memory.
-	addCode("AC " + cg.staticTable.table[node.children[0].name].temp);
+	addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
 	// Load the X-register with a constant.
 	addCode("A2 01");
@@ -342,7 +388,6 @@ function print(node){
 	// System call.
 	addCode("FF");
 }
-
 
     cg.generate();
 
