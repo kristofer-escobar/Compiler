@@ -7,70 +7,84 @@ function CodeGeneration(AST){
 // Instance of a code generator.
 var cg = {};
 
-//cg.code = "";
-
+// Variable to hold the generated code.
 cg.code = [];
 
-var addIndex = 0;
-
-var endIndex = 255;
-
-// Fill with zeroes.
-function initCode(){
-for(var i = 0; i < 256; i++){
-	cg.code[i] = "00";
-}
-
-}
-
-var instrCount = 0;
-var scopes = [];
-
-// Create a static table.
+// Static table.
 cg.staticTable = new StaticTable();
 
-// Create a jump table.
+// Jump table.
 cg.jumpTable = new JumpTable();
 
+// Array to keep track of scope.
+var scopes = [];
+
+// Index for the next value to be added.
+var addIndex = 0;
+
+// Index for the next value to be added at the end of the memory.
+var endIndex = 255;
+
+// Function to fill code with zeroes.
+function initCode(){
+
+	// Initialize the code with all 00's.
+	for(var i = 0; i < 256; i++){
+
+		cg.code[i] = "00";
+	}
+
+}
+
+// Function to add code to the code array.
 function addCode(code){
 
+	// Convert string of code into an array.
+	var temp = code.split(" ");
 
-//cg.code += code + " ";
+	// Store each instruction into the code array.
+	for(var i = 0; i < temp.length ; i++){
 
-//debugger;
-var temp = code.split(" ");
+		// Store the insruction into code array.
+		cg.code[addIndex] = temp[i];
 
-for(var i = 0; i < temp.length ; i++){
-cg.code[addIndex] = temp[i];
-addIndex++;
-}
-//cg.code = cg.code.concat(temp);
+		// Increase add index of next stored instruction.
+		addIndex++;
+	}
 
 } // End addCode
 
+
+// Function to put strings at the end of the code array.
 function putString(string){
 
-// Null terminated string.
-cg.code[endIndex] = "00";
-endIndex--;
+	// Null terminated string.
+	cg.code[endIndex] = "00";
 
-var temp = string.split("");
+	// Decrease the postiion for the next character to be added.
+	endIndex--;
 
-temp.reverse();
+	// Split the string into a character array.
+	var temp = string.split("");
 
-for(var i = 0; i < temp.length ; i++){
-cg.code[endIndex] = temp[i].charCodeAt(0).toString(16).toUpperCase();
-endIndex--;
+	// Reverse the order of the string.
+	temp.reverse();
+
+	// Add each character to the end of the code array. 
+	for(var i = 0; i < temp.length ; i++){
+
+		cg.code[endIndex] = temp[i].charCodeAt(0).toString(16).toUpperCase();
+
+		// Decrease the index.
+		endIndex--;
+	}
+
 }
-}
-
 
 // Function to generate code.
-// Create a string representation of the tree.
 cg.generate = function() {
 
 	initCode();
-	//alert("cleared");
 
 	if(verboseMode){
         putMessage("Generating code.");
@@ -78,11 +92,8 @@ cg.generate = function() {
 
     var traversalResult = "";
 
-	var count = 0;
-
+	// Keeps track of scope level.
 	var scopeLevel = 0;
-
-
 
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
@@ -97,33 +108,30 @@ cg.generate = function() {
 				scopeLevel--;
 			}
         } // End If
-		//alert(depth);
 
-
+        // Reduce the scope level.
 		if(scopes.length > 0){
-	        if(scopes[scopes.length - 1].depth == depth){
-	        	//alert("Popping ..");
-	        	scopes.pop();
-	        }
+			if(scopes[scopes.length - 1].depth == depth){
+
+				scopes.pop();
+			}
 		}
 
-
-
-        // Keep Track of scope.
+        // Increse the of scope.
         if(node.name == "block"){
-        	//alert("Adding ..");
+
 			scopeLevel++;
 
 			var scopeObj = { scope: scopeLevel,
 							depth: depth };
 
 			scopes.push(scopeObj);
-
-
         }
 
+
+        // Handle each branch.
+
         if(node.name == "declare"){
-        	//alert("scope is: " + scopes[scopes.length - 1].scope);
 			declare(node);
         }
 
@@ -144,29 +152,17 @@ cg.generate = function() {
 		}
 
 		if(node.name == "if"){
-			//addCode("if");
-
-			// // Load the X-register from memory.
-			// addCode("AE " + cg.staticTable.table[node.children[0].name].temp);
-
-			// // Compare memory to the X-register, set z-flag if equal.
-			// addCode("EC " + cg.staticTable.table[node.children[1].name].temp);
-
-			// // Add entry into the static table.
-			// var jump = cg.jumpTable.add();
-			// // Branch on not equal.
-			// addCode("DO " + jump);
 			if_statement(node);
 			return;
 		}
 
 
-			traversalResult +=  node.name + " ";
+		traversalResult +=  node.name + " ";
 
-            // Recursive call to expand.
-            for (var j = 0; j < node.children.length; j++){
-                expand(node.children[j], depth + 1);
-            } //  End for
+        // Recursive call to expand.
+        for (var j = 0; j < node.children.length; j++){
+            expand(node.children[j], depth + 1);
+        } //  End for
 
     } // End expand
 
@@ -175,9 +171,6 @@ cg.generate = function() {
 
     // End program.
     addCode("00");
-
-    // Make into an array.
-    //cg.code = cg.code.split(" ");
 
     // Back patch jumps.
     backPatchJump();
@@ -189,14 +182,13 @@ cg.generate = function() {
 
 // Return code generated.
 cg.toString = function() {
-	//alert(cg.code);
 	return cg.code.join(" ");
 };
 
 
 function if_statement(node){
 	var jump = "";
-//debugger;
+
 	// Handle condition.
 	if(node.children[0].name == "equality"){
 		jump = equality(node.children[0]);
@@ -217,37 +209,23 @@ function if_statement(node){
 
 	}
 
-	// Add jump offset.
-	// add a J0 meta symbol to determine where the expr ends. Then calculate the jump offset.
-
-	//debugger;
 
 	// Calculate jump offset.
-	//var codeArray = cg.code.split(" ");
-
 	var codeArray = cg.code;
 
 	var jumpStartIndex = codeArray.indexOf(jump);
 
-	//var jumpEndIndex = codeArray.length - 1;
-
 	var jumpEndIndex = addIndex -1;
 
-
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
-
-	//alert(jumpOffset);
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
 
-	//alert(cg.jumpTable.table[jump].address);
-
-//addCode();
-
 }
 
 function makeTrue(){
+
 	var jump = cg.jumpTable.add();
 	addCode("AE 10 00 EC 10 00 D0 " + jump);
 
@@ -255,6 +233,7 @@ function makeTrue(){
 }
 
 function makeFalse(){
+
 	var jump = cg.jumpTable.add();
 	addCode("AE 00 00 EC 01 00 D0 " + jump);
 
@@ -263,18 +242,10 @@ function makeFalse(){
 
 function equality(node){
 	if(node.parent.name == "if"){
-// 		// Load the X-register from memory.
-// 		addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
-// //debugger;
-// 		if(isChar(node.children[1].name)){
-// 			// Compare memory to the X-register, set z-flag if equal.
-// 			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
-// 		} else if(isDigit(node.children[1].name)){
-
-// 		}
 
 		// Compare a variable to another variable.
 		if(isChar(node.children[0].name) && isChar(node.children[1].name)){
+
 			// Load the X-register from memory.
 			addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
@@ -285,6 +256,7 @@ function equality(node){
 			var tempValue = "";
 
 			if(node.children[1].name.toString().length == 1){
+
 				tempValue = "0" + node.children[1].name;
 			}
 
@@ -297,23 +269,22 @@ function equality(node){
 
 		// Add entry into the static table.
 		var jump = cg.jumpTable.add();
+
 		// Branch on not equal.
 		addCode("D0 " + jump);
 
 		return jump;
 	}
 
-
 }
 
+// Function to handle code generation for declarations.
 function declare(node){
-//alert("scope is: " + scopes[scopes.length - 1].scope);
 
 	// Add entry into the static table.
-	//cg.staticTable.add(node.children[1].name);
-
 	cg.staticTable.add(node.children[1].name, scopes[scopes.length - 1].scope);
 
+	// If the declaration is not a string, then load the memory with zero.
 	if(node.children[0].name != "string"){
 
 		// Load the accumulator with zero.
@@ -323,35 +294,35 @@ function declare(node){
 		addCode("8D " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
 
 	}
-
-
-	//alert(node.children[1].name);
-	//alert(cg.staticTable.table[node.children[1].name].temp + " " + cg.staticTable.table[node.children[1].name].variable + " " + cg.staticTable.table[node.children[1].name].address);
 }
 
+// Function to handle code generation for the assignments.
 function assign(node){
-	//addCode("assign");
 
-	// Get the value.
+	// Get the value to be assigned.
 	var tempVal = node.children[1].name;
 
-	// If the value is a variable look up the value in the symbol table.
+	// If the value is a variable get the location of that temporary variable.
 	if(isChar(tempVal)){
-		//tempVal = symbolTableLookUp(tempVal, scopeLevel).value;
 
 		// Load the accumulator from memory.
 		addCode("AD " + cg.staticTable.table[tempVal + scopes[scopes.length - 1].scope].temp);
 	} else if(isDigit(tempVal)){
+
 		// If the value is a single digit prepend a zero.
 		if(tempVal.length == 1){
+
 			tempVal = "0" + tempVal;
 		}
 
-		// Load the accumulator with the value.
+		// Load the accumulator with the digit value.
 		addCode("A9 " + tempVal);
 	}else{
-		//alert(tempVal);
+
+		// Put string at the end of the memory.
 		putString(tempVal);
+
+		// Load the accumulator with the stating index of the string.
 		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
 	}
 
@@ -360,91 +331,89 @@ function assign(node){
 
 }
 
-function backPatch(){
-//var codeArray = cg.code.split(" ");
-
-//var staticTableStart = (cg.code.length - 1).toString(16);
-
-var staticTableStart = (addIndex).toString(16);
-//debugger;
-//alert(staticTableStart);
-for(var i in cg.staticTable.table){
-	//alert(cg.staticTable.table[i].temp);
-
-	var littleEndian = cg.staticTable.table[i].temp.substring(0,2);
-
-	for(var j = 0; j < cg.code.length; j++)
-	{
-		if(cg.code[j] == littleEndian){
-			cg.code[j] = staticTableStart.toUpperCase();
-
-			cg.code[j+1] = "00";
-		}
-
-	}
-
-	//cg.code[cg.code.indexOf(littleEndian)] = staticTableStart.toUpperCase();
-
-	// Convert to decimal and add one.
-	staticTableStart = parseInt(staticTableStart, 16) + 1;
-
-	// Convert to hex.
-	staticTableStart = staticTableStart.toString(16);
-
-	//alert(cg.code);
-
-
-}
-
-
-
-}
-
-
-function backPatchJump(){
-//var codeArray = cg.code.split(" ");
-//debugger;
-for(var i in cg.jumpTable.table){
-
-	var offset = cg.jumpTable.table[i].address;
-
-	// Prepend a zero.
-	if(offset.toString().length == 1){
-		cg.code[cg.code.indexOf(i)] = "0" + offset;
-	} else{
-		cg.code[cg.code.indexOf(i)] = offset;
-	}
-
-}
-}
-
-
+// Function to handle code generation for prints.
 function print(node){
-	//addCode("print");
 
 	// Load the Y-register from memory.
 	addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
 	var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
 
-	//alert(temp.type);
-
+	// Load the X-register with a 02 if printing strings, else load 01.
 	if(temp.type == "string"){
-	// Load the X-register with a constant.
-	addCode("A2 02");
-	}else{
-	// Load the X-register with a constant.
-	addCode("A2 01");
-	}
 
+		// Load the X-register with a constant.
+		addCode("A2 02");
+	}else{
+
+		// Load the X-register with a constant.
+		addCode("A2 01");
+	}
 
 	// System call.
 	addCode("FF");
 }
 
-    cg.generate();
+// Function to handle code back patching.
+function backPatch(){
 
-    return cg;
+	// Find the index of where the static values end.
+	var staticTableStart = (addIndex).toString(16);
+
+	// Replace all temporary values.
+	for(var i in cg.staticTable.table){
+
+		var littleEndian = cg.staticTable.table[i].temp.substring(0,2);
+
+		for(var j = 0; j < cg.code.length; j++){
+
+			if(cg.code[j] == littleEndian){
+
+				cg.code[j] = staticTableStart.toUpperCase();
+
+				cg.code[j+1] = "00";
+			}
+
+		}
+
+		// Convert to decimal and add one.
+		staticTableStart = parseInt(staticTableStart, 16) + 1;
+
+		// Convert to hex.
+		staticTableStart = staticTableStart.toString(16);
+
+	} // End for loop.
+
+} // End function backPatch.
+
+
+function backPatchJump(){
+
+	// Replace all temporary jump values.
+	for(var i in cg.jumpTable.table){
+
+		// Get jump offset.
+		var offset = cg.jumpTable.table[i].address;
+
+		// Prepend a zero.
+		if(offset.toString().length == 1){
+
+			cg.code[cg.code.indexOf(i)] = "0" + offset;
+		} else{
+
+			cg.code[cg.code.indexOf(i)] = offset;
+		}
+
+	} // End for loop.
+
+} // End function backPatchJump.
+
+
+// Call to begin code generation.
+cg.generate();
+
+// Return code generation object.
+return cg;
 
 } // End CodeGeneration.
 
