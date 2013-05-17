@@ -358,7 +358,7 @@ var retVal = "";
 
 // Function to handle code generation for prints.
 function print(node){
-//debugger;
+debugger;
 if(node.children[0]){
 
 	if(node.children[0].name == "+"){
@@ -464,7 +464,22 @@ if(node.children[0]){
 				addCode("A0 " + "00");
 			}
 
-		} else if(isCharList(firstChild.name)){ // It's a string.
+		} else if(firstChild.name == "equality"){
+			var boolOne = firstChild.children[0].name;
+
+			var boolTwo = firstChild.children[1].name;
+
+			var boolResult = "";
+
+			if(boolOne == boolTwo){
+				boolResult = "01"; // True
+			}else{
+				boolResult = "00"; // False
+			}
+
+			addCode("A0 " + boolResult);
+
+		}else if(isCharList(firstChild.name)){ // It's a string.
 		// Put string at the end of the memory.
 		putString(firstChild.name);
 

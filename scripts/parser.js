@@ -321,6 +321,7 @@ function parseStatementList(){
 } // End parseStatementList
 
 function parsePrint(){
+	debugger;
 	if(verboseMode){
 		putMessage("Adding Print branch to parse tree.");
 	}
@@ -366,7 +367,12 @@ function parseExpr(){
 			putMessage("Parsing Boolean expression.");
 		} // End else if
 		parseBooleanExpr();
-	} else{
+	} else if(currentToken.kind == TOKEN_OPEN_PARENTHESIS && tokens[tokenIndex].kind == TOKEN_BOOLEAN){
+		if(verboseMode){
+			putMessage("Parsing Boolean expression.");
+		} // End else if
+		parseBooleanExpr();
+	}else{
 		putErrorMessage("Unknown expression.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 	} // End if
 

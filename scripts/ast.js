@@ -136,6 +136,11 @@ a.build = function() {
 				return;
 			}
 
+			if(node.name == "BoolExpr"){
+				boolExpr(node);
+				return;
+			}
+
 			traversalResult +=  node.name + " ";
 
 			// Recursive call to expand.
@@ -259,6 +264,8 @@ function expr(node){
 		intExpr(node.children[0]);
 	} else if(node.children[0].name == "CharExpr"){
 		charExpr(node.children[0]);
+	} else if(node.children[0].name == "BoolExpr"){
+		boolExpr(node.children[0]);
 	} else{
 		id(node.children[0]);
 	}
