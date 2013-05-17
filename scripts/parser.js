@@ -43,8 +43,6 @@ function Parser(tokenStream){
 			putMessage("Creating symbol table.");
 		}
 
-		//createSymbolTable();
-
 		// Report the results.
 		putMessage("Parsing found " + errorCount + " error(s)");
 
@@ -64,7 +62,7 @@ function Parser(tokenStream){
 			parsePrint();
 
 		} else if(currentToken.kind == TOKEN_IDENTIFIER){
-//debugger;
+
 			var idenName = currentToken.value;
 
 			// Save pointer to current scope.
@@ -107,7 +105,7 @@ function Parser(tokenStream){
 			} // End if
 
 			parseExpr();
-//debugger;
+
 			tokenValueEnd = tokenIndex;
 
 			var tokenContent = getTokenContent(tokens, tokenValueStart, tokenValueEnd);
@@ -174,7 +172,6 @@ function Parser(tokenStream){
 				putErrorMessage("Error initializing variable");
 			}
 
-
 			varValues[idName] = tokenContent;
 
 			if(verboseMode){
@@ -218,7 +215,7 @@ function Parser(tokenStream){
 	} // End parseStatement.
 
 function parseWhileStatement(){
-//debugger;
+
 	tree.addBranchNode("WhileLoop");
 
 	match(TOKEN_WHILE);
@@ -237,7 +234,7 @@ function parseWhileStatement(){
 	if(verboseMode){
 		putMessage("Parsing statement list.");
 	} // End if
-//debugger;
+
 	parseStatementList();
 
 	match(TOKEN_CLOSE_CURLY_BRACE);

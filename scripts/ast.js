@@ -64,92 +64,87 @@ a.build = function() {
     var traversalResult = "";
 
 	var count = 0;
+
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
-//debugger;
+
         // Check for leaf nodes.
         if (!node.children || node.children.length === 0){
-            //traversalResult +=  node.name + " ";
-            //traversalResult += "\n";
-        if(node.name == "}"){
-			//if(!node.children[0]){
-				//while(count !== 0){
-					a.endChildren();
-					//count--;
-				//}
-			//}
-        }
+
+			if(node.name == "}"){
+				a.endChildren();
+
+			}
 
         }else{
 
+	        // Create nodes for VarDecl
+			if(node.name == "VarDecl"){
+				varDecl(node);
+				return;
+			}
 
+			if(node.name == "Statement"){
+				//
+				//a.addBranchNode("block");
 
-        // Create nodes for VarDecl
-		if(node.name == "VarDecl"){
-			varDecl(node);
-			return;
-		}
+				if(node.children[1]){
+					if(node.children[1].name == "="){
+						assign(node);
+						return;
+					}
 
-		if(node.name == "Statement"){
-			//
-			//a.addBranchNode("block");
+				// Increase scope level.
 
-			if(node.children[1]){
-				if(node.children[1].name == "="){
-					assign(node);
-					return;
-				}
-
-			// Increase scope level.
-
-			if(node.children[0] && node.children[2]){
-				if(node.children[0].name == "{" && node.children[2].name == "}"){
-				a.addBranchNode("block");
-				count++;
-				scopeLevel++;
-					if(node.children[1].name == "StatementList"){
-						if(!node.children[1].children[0]){
-							while(count !== 0){
-								a.endChildren();
-								count--;
+				if(node.children[0] && node.children[2]){
+					if(node.children[0].name == "{" && node.children[2].name == "}"){
+					a.addBranchNode("block");
+					count++;
+					scopeLevel++;
+						if(node.children[1].name == "StatementList"){
+							if(!node.children[1].children[0]){
+								while(count !== 0){
+									a.endChildren();
+									count--;
+								}
 							}
 						}
 					}
 				}
+
+					//else if(node.children[1].name == "StatementList"){
+					//	a.addBranchNode("block");
+					//	count++;
+					//}
+				}
+				//a.endChildren();
 			}
 
-				//else if(node.children[1].name == "StatementList"){
-				//	a.addBranchNode("block");
-				//	count++;
-				//}
+			if(node.name == "Print"){
+				print(node.children[2]);
+				return; // Move onto next subtree.
 			}
-			//a.endChildren();
-		}
 
-		if(node.name == "Print"){
-			print(node.children[2]);
-			return; // Move onto next subtree.
-		}
+			if(node.name == "WhileLoop"){
+				//debugger;
+				whileLoop(node);
+				return;
+			}
 
-		if(node.name == "WhileLoop"){
-			//debugger;
-			whileLoop(node);
-			return;
-		}
-
-		if(node.name == "IfStatement"){
-			ifStatement(node);
-			return;
-		}
-
+			if(node.name == "IfStatement"){
+				ifStatement(node);
+				return;
+			}
 
 			traversalResult +=  node.name + " ";
 
-            // Recursive call to expand.
-            for (var j = 0; j < node.children.length; j++){
-                expand(node.children[j], depth + 1);
-            } //  End for
-        }// End else
+			// Recursive call to expand.
+			for (var j = 0; j < node.children.length; j++){
+				expand(node.children[j], depth + 1);
+			} //  End for
+
+		}// End else
+
     } // End toString
 
     // Initial call to expand.
@@ -207,8 +202,8 @@ function ifStatement(node){
 
 	var expr = stmt.children[0];
 
-	if(expr.name == "Print"){ // Tested.
-		//debugger;
+	if(expr.name == "Print"){
+
 		print(expr.children[2]);
 	} else if (expr.name == "Statement"){
 		// Handle nested statements inside a while loop.
@@ -232,7 +227,6 @@ function ifStatement(node){
 }
 
 function boolExpr(node){
-	//a.addBranchNode("BoolExpr");
 
 	if(node.children[0].name == "("){
 		equality(node);
@@ -241,7 +235,6 @@ function boolExpr(node){
 		id(node);
 	}
 
-	//a.endChildren();
 }
 
 function equality(node){
@@ -256,7 +249,6 @@ function equality(node){
 }
 
 function print(node){
-//debugger;
 
 	a.addBranchNode("print");
 	expr(node);
@@ -308,9 +300,11 @@ function id(node){
 }
 
 a.toString = function() {
-	//debugger;
+
     var traversalResult = "";
-var scopeLevel = 1;
+
+	var scopeLevel = 1;
+
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth){
 
@@ -354,7 +348,7 @@ var scopeLevel = 1;
 					typeCheckOps(node.children[0], scopeLevel);
 
 				}
-							}
+			}
 
             // Check for branch nodes.
             traversalResult += "<" + node.name + "> \n";
@@ -372,7 +366,6 @@ var scopeLevel = 1;
     };
 
 function typeCheckAssign(node, scopeLevel){
-//debugger;
 
 	// Get the Identifer type.
 	var variable = symbolTableLookUp(node.children[0].name,scopeLevel);
@@ -423,7 +416,6 @@ function typeCheckOps(node,scopeLevel){
 
 		return compareType;
 }
-
 
     a.build();
 

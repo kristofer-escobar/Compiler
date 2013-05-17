@@ -56,7 +56,7 @@ function run(){
 
             // Display parse tree.
             document.getElementById("parseTree").value += "\n" + parser.tree.toString();
-//debugger;
+
             var ast = new AST(parser.tree);
 
             document.getElementById("ASTTree").value += "ABSTRACT SYNTAX TREE: \n";

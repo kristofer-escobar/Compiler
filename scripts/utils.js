@@ -9,8 +9,7 @@ function init(){
     document.getElementById("taOutput").value = "";
     document.getElementById("taSymbolTable").value = "";
     // Set the initial values for our globals.
-    //tokens = "";
-    //tokenIndex = 0;
+
     currentToken = ' ';
     errorCount = 0;
     warningCount = 0;
@@ -75,7 +74,6 @@ function checkLexicon(key){
     for(var i in lexicon){
         if(i == key){
             // If found return the value for the corresponding key.
-            //alert(lexicon[key]);
             return lexicon[key];
         } // End if
     } // End for
