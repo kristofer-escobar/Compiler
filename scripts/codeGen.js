@@ -317,7 +317,19 @@ function assign(node){
 
 		// Load the accumulator with the digit value.
 		addCode("A9 " + tempVal);
-	}else{
+	}else if(tempVal.toUpperCase() == "TRUE" || tempVal.toUpperCase() == "FALSE"){
+
+		if(tempVal.toUpperCase() == "TRUE" ){
+
+			// Load the accumulator with true or 01.
+			addCode("A9 " + "01");
+		} else{
+
+			// Load the accumulator with false or 00.
+			addCode("A9 " + "00");
+		}
+
+	} else{
 
 		// Put string at the end of the memory.
 		putString(tempVal);
@@ -369,7 +381,11 @@ function backPatch(){
 
 			if(cg.code[j] == littleEndian){
 
-				cg.code[j] = staticTableStart.toUpperCase();
+				if(staticTableStart.toString().length == 1){
+					cg.code[j] = "0" + staticTableStart.toUpperCase();
+				}else{
+					cg.code[j] = staticTableStart.toUpperCase();
+				}
 
 				cg.code[j+1] = "00";
 			}

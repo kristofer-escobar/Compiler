@@ -361,6 +361,11 @@ function parseExpr(){
 			putMessage("Parsing Identifier.");
 		} // End else if
 		parseId();
+	} else if(currentToken.kind == TOKEN_BOOLEAN){
+		if(verboseMode){
+			putMessage("Parsing Boolean expression.");
+		} // End else if
+		parseBooleanExpr();
 	} else{
 		putErrorMessage("Unknown expression.", tokens[tokenIndex-1].line, tokens[tokenIndex-1].position);
 	} // End if

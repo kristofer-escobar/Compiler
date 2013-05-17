@@ -379,6 +379,8 @@ function typeCheckAssign(node, scopeLevel){
 	//} else if(isChar(node.children[1].name) && (node.children[1].name.length == 1)){
 	} else if(isChar(variable.value) && (variable.value.length == 1)){
 		compareType = symbolTableLookUp(variable.value,scopeLevel).type;
+	} else if(variable.value.toUpperCase() == "TRUE" || variable.value.toUpperCase() == "FALSE"){
+		compareType = "boolean";
 	} else if(node.children[1].name == "+" || node.children[1].name == "-") {
 		compareType = typeCheckOps(node.children[1],scopeLevel);
 	}
