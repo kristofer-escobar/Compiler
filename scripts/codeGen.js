@@ -231,7 +231,7 @@ function if_statement(node){
 
 	//var jumpEndIndex = codeArray.length - 1;
 
-	var jumpEndIndex = addIndex - 1;
+	var jumpEndIndex = addIndex -1;
 
 
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
