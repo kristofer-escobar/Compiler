@@ -386,7 +386,7 @@ function backPatch(){
 
 } // End function backPatch.
 
-
+// Function to back patch temporary jump values.
 function backPatchJump(){
 
 	// Replace all temporary jump values.
@@ -407,7 +407,6 @@ function backPatchJump(){
 	} // End for loop.
 
 } // End function backPatchJump.
-
 
 // Call to begin code generation.
 cg.generate();

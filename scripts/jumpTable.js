@@ -20,8 +20,6 @@ this.add = function(){
 		this.table[entry.temp] = entry;
 	}
 
-	this.address++;
-
 	// Return the Jump name
 	return entry.temp;
 };

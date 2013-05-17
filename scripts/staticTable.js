@@ -22,11 +22,6 @@ this.add = function(name, scope){
 	if(!this.table[name+scope]){
 		this.table[name+scope] = entry;
 	}
-	// } else if(!this.table[name].scope){
-	// 	this.table[name] = entry;
-	// }
-
-	//this.address++;
 
 };
 
