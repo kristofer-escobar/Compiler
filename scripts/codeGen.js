@@ -358,7 +358,7 @@ var retVal = "";
 
 // Function to handle code generation for prints.
 function print(node){
-debugger;
+//debugger;
 if(node.children[0]){
 
 	if(node.children[0].name == "+"){
@@ -440,6 +440,9 @@ if(node.children[0]){
 
 				// Load the X-register with a constant.
 				addCode("A2 02");
+
+				// System call.
+				addCode("FF");
 				return;
 			}
 

@@ -52,7 +52,7 @@ function Lexer(){
             for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
                 // Store the current working characterPosition.
                 var currentCharacter = currentLine[characterPosition];
-
+debugger;
                 //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
                 if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                     if(currentCharacter == EOF){ // Reached end of file.
@@ -222,7 +222,8 @@ function Lexer(){
                             } // End else
                         } // End else
 
-                        lexemeStartPosition = characterPosition + 1;
+                        lexemeStartPosition = characterPosition;
+                        //lexemeStartPosition = characterPosition + 1;
                     }// End if
 
                     if(currentCharacter == "="){
