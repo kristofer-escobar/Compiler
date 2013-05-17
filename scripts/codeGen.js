@@ -231,7 +231,7 @@ function if_statement(node){
 
 	//var jumpEndIndex = codeArray.length - 1;
 
-	var jumpEndIndex = addIndex;
+	var jumpEndIndex = addIndex - 1;
 
 
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
@@ -263,17 +263,37 @@ function makeFalse(){
 
 function equality(node){
 	if(node.parent.name == "if"){
-		// Load the X-register from memory.
-		addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
-//debugger;
-		if(isChar(node.children[1].name)){
+// 		// Load the X-register from memory.
+// 		addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+// //debugger;
+// 		if(isChar(node.children[1].name)){
+// 			// Compare memory to the X-register, set z-flag if equal.
+// 			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
+// 		} else if(isDigit(node.children[1].name)){
+
+// 		}
+
+		// Compare a variable to another variable.
+		if(isChar(node.children[0].name) && isChar(node.children[1].name)){
+			// Load the X-register from memory.
+			addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
 			// Compare memory to the X-register, set z-flag if equal.
 			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
-		} else if(isDigit(node.children[1].name)){
+		} else if(isChar(node.children[0].name) && isDigit(node.children[1].name)){
 
+			var tempValue = "";
+
+			if(node.children[1].name.toString().length == 1){
+				tempValue = "0" + node.children[1].name;
+			}
+
+			// Load the X-register from memory.
+			addCode("A2 " + tempValue);
+
+			// Compare memory to the X-register, set z-flag if equal.
+			addCode("EC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 		}
-
-
 
 		// Add entry into the static table.
 		var jump = cg.jumpTable.add();
@@ -294,11 +314,16 @@ function declare(node){
 
 	cg.staticTable.add(node.children[1].name, scopes[scopes.length - 1].scope);
 
-	// Load the accumulator with zero.
-	addCode("A9 00");
+	if(node.children[0].name != "string"){
 
-	// Store the accumulator into memory.
-	addCode("8D " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
+		// Load the accumulator with zero.
+		addCode("A9 00");
+
+		// Store the accumulator into memory.
+		addCode("8D " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
+
+	}
+
 
 	//alert(node.children[1].name);
 	//alert(cg.staticTable.table[node.children[1].name].temp + " " + cg.staticTable.table[node.children[1].name].variable + " " + cg.staticTable.table[node.children[1].name].address);
