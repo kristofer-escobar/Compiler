@@ -343,24 +343,231 @@ function assign(node){
 
 }
 
+
+function printInt(node){
+var retVal = "";
+
+	if(node.children[1].name == "+"){ // Has two children.
+		retVal = parseInt(node.children[0].name, 10)  + parseInt(printInt(node.children[1]), 10);
+	}else{ // Has one child.
+		retVal = parseInt(node.children[0].name, 10) + parseInt(node.children[1].name, 10);
+	}
+
+	return retVal;
+}
+
 // Function to handle code generation for prints.
 function print(node){
+debugger;
+if(node.children[0]){
 
-	// Load the Y-register from memory.
-	addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+	if(node.children[0].name == "+"){
+		node = node.children[0];
+	}
 
-	var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
+	var firstChild = node.children[0];
 
-	// Load the X-register with a 02 if printing strings, else load 01.
-	if(temp.type == "string"){
+	// Check if Print node has two children.
+	if(node.children[1]){
+
+		var secondChild = node.children[1];
+
+		if(isDigit(firstChild.name) && isDigit(secondChild.name)){ // IntExpr
+			// Add digits and store in accumulator.
+			var total = parseInt(firstChild.name,10)  + parseInt(secondChild.name, 10);
+
+			total = total.toString(16).toUpperCase();
+
+			if(total.toString().length == 1){
+				total = "0" + total;
+			}
+
+			addCode("A0 " + total);
+		}else if(isDigit(firstChild.name) && isChar(secondChild.name)){ // Int and a variable.
+			// Look up the variable in the symbol table.
+			var temp = symbolTableLookUp(secondChild.name , scopes[scopes.length - 1].scope);
+
+			if(temp.type == "int"){ // Two ints.
+
+				// Add digits and store in accumulator.
+				var total = parseInt(firstChild.name,10)  + parseInt(temp.value , 10);
+
+				total = total.toString(16).toUpperCase();
+
+				if(total.toString().length == 1){
+					total = "0" + total;
+				}
+
+				addCode("A0 " + total);
+			}else{ // Anything else, print separately.
+
+				print(firstChild);
+
+				print(secondChild);
+
+				return;
+			}
+		}else if(isDigit(firstChild.name) && secondChild.name == "+"){
+
+			var total = parseInt(firstChild.name, 10) + parseInt(printInt(secondChild), 10);
+
+			total = total.toString(16).toUpperCase();
+
+			if(total.toString().length == 1){
+				total = "0" + total;
+			}
+
+			addCode("A0 " + total);
+
+		} else { // Anything else print separately.
+			print(firstChild);
+
+			print(secondChild);
+
+			return;
+		}
+	}else{ // Print node has only one child.
+
+		// Check what type to print.
+		if(isChar(firstChild.name)){ // Its a character. (variable.)
+			// Load the Y-register from memory.
+			addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
+			var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
+
+			// Load the X-register with a 02 if printing strings, else load 01.
+			if(temp.type == "string"){
+
+				// Load the X-register with a constant.
+				addCode("A2 02");
+				return;
+			}
+
+		} else if(isDigit(firstChild.name)){ // It's a digit.
+
+			var temp = firstChild.name;
+
+			if(temp.toString().length == 1){
+				temp = "0" + temp;
+			}
+
+			addCode("A0 " + temp);
+
+		} else if(firstChild.name.toUpperCase() == "TRUE" || firstChild.name.toUpperCase() == "FALSE"){ // Its a boolean.
+
+			if(firstChild.name.toUpperCase() == "TRUE"){
+				addCode("A0 " + "01");
+			}else{
+				addCode("A0 " + "00");
+			}
+
+		} else if(isCharList(firstChild.name)){ // It's a string.
+		// Put string at the end of the memory.
+		putString(firstChild.name);
+
+		// Load the accumulator with the stating index of the string.
+		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
+
+		// Store the accumulator in memory.
+		//addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
+		addCode("A0 " + (endIndex + 1).toString(16).toUpperCase());
 
 		// Load the X-register with a constant.
 		addCode("A2 02");
-	}else{
+
+		// System call.
+		addCode("FF");
+		return;
+
+		} else{
+			// Unknown, throw error.
+			putErrorMessage("Unknown print type in code generation");
+		}
+
+	}
+
+} else{ // No children.
+
+		var firstChild = node;
+
+			// Check what type to print.
+		if(isChar(firstChild.name)){ // Its a character. (variable.)
+			// Load the Y-register from memory.
+			addCode("AC " + cg.staticTable.table[firstChild.name + scopes[scopes.length - 1].scope].temp);
+
+			var temp = symbolTableLookUp(firstChild.name , scopes[scopes.length - 1].scope);
+
+			// Load the X-register with a 02 if printing strings, else load 01.
+			if(temp.type == "string"){
+
+				// Load the X-register with a constant.
+				addCode("A2 02");
+
+				// System call.
+				addCode("FF");
+				return;
+			}
+
+		} else if(isDigit(firstChild.name)){ // It's a digit.
+
+			var temp = firstChild.name;
+
+			if(temp.toString().length == 1){
+				temp = "0" + temp;
+			}
+
+			addCode("A0 " + temp);
+
+		} else if(firstChild.name.toUpperCase() == "TRUE" || firstChild.name.toUpperCase() == "FALSE"){ // Its a boolean.
+
+			if(firstChild.name.toUpperCase() == "TRUE"){
+				addCode("A0 " + "01");
+			}else{
+				addCode("A0 " + "00");
+			}
+
+		} else if(isCharList(firstChild.name)){ // It's a string.
+		// Put string at the end of the memory.
+		putString(firstChild.name);
+
+		// Load the accumulator with the stating index of the string.
+		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
+
+		// Store the accumulator in memory.
+		//addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
+		addCode("A0 " + (endIndex + 1).toString(16).toUpperCase());
+
+		// Load the X-register with a constant.
+		addCode("A2 02");
+
+		// System call.
+		addCode("FF");
+		return;
+
+		} else{
+			// Unknown, throw error.
+			putErrorMessage("Unknown print type in code generation");
+		}
+}
+
+
+	// // Load the Y-register from memory.
+	// addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
+	// var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
+
+	// // Load the X-register with a 02 if printing strings, else load 01.
+	// if(temp.type == "string"){
+
+	// 	// Load the X-register with a constant.
+	// 	addCode("A2 02");
+	// }else{
 
 		// Load the X-register with a constant.
 		addCode("A2 01");
-	}
+	//}
 
 	// System call.
 	addCode("FF");

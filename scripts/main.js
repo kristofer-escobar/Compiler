@@ -35,7 +35,7 @@ function run(){
 
             // Create an instance of a parser object.
             var parser = new Parser(tokens);
-debugger;
+
             // Begin parsing tokens.
             parser.parse();
 
