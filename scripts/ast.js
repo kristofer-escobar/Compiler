@@ -241,33 +241,71 @@ function ifStatement(node){
 	// Handle the statement list inside the while loop.
 	var stmtLst = node.children[3];
 
+	// Add block for statement list.
+	a.addBranchNode("block");
+
+	// Check if the statement list has a statement.
+	if(stmtLst.children[0]){
+
+		// Handle while statement.
+		ifBody(stmtLst);
+
+	} // End if
+
+	// End block branch.
+	a.endChildren();
+
+	// End while branch.
+	a.endChildren();
+}
+
+function ifBody(stmtLst){
+
 	var stmt = stmtLst.children[0];
 
 	var expr = stmt.children[0];
 
-	if(expr.name == "Print"){
-
+	if(expr.name == "Print"){ // Tested.
 		print(expr.children[2]);
-	} else if (expr.name == "Statement"){
+	} else if (expr.name == "Id"){
 		// Handle nested statements inside a while loop.
-		if(expr.children[1]){
-			if(expr.children[1].name == "="){
-				assign(expr);
+		if(stmt.children[1]){
+			if(stmt.children[1].name == "="){
+				assign(stmt);
 			}
 		}
 	} else if(expr.name == "VarDecl"){ //Tested
 		varDecl(expr);
-	} else if(expr.name == "WhileLoop"){
+	} else if(expr.name == "WhileLoop"){// Tested
 		whileLoop(expr);
 	} else if(expr.name == "IfStatement"){
 		ifStatement(expr);
+	} else if(expr.name == "{"){ // Statement
+		if(stmt.children[1]){
+			if(stmt.children[1].name == "StatementList"){
+				a.addBranchNode("block");
+				ifBody(stmt.children[1]);
+				a.endChildren();
+			}
+		}
 	} else
 	{
 		// Unknown expression.
 	}
 
-	a.endChildren();
+	// Check for another statement list.
+	if(stmtLst.children[1]){
+
+		var innerStmtLst = stmtLst.children[1];
+
+		// Check for another statment.
+		if(innerStmtLst.children[0]){
+			ifBody(innerStmtLst);
+		} // end if
+	} // end if
+
 }
+
 
 function boolExpr(node){
 
