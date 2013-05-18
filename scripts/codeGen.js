@@ -325,7 +325,7 @@ function if_statement(node){
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
 
 	// Add jump offset to jump table.
-	cg.jumpTable.table[jump].address = jumpOffset;
+	cg.jumpTable.table[jump].address = jumpOffset.toString(16).toUpperCase();
 
 } // Enf IF
 
@@ -337,6 +337,12 @@ function whileLoop(node){
 	var jump = "";
 
 	var bool = node.children[0];
+
+	var flag = true;
+
+	if(node.children[0].name.toUpperCase() == "FALSE"){
+		flag = false;
+	}
 
 	// Handle boolean expression.
 	jump = boolExpr(bool);
@@ -361,16 +367,17 @@ function whileLoop(node){
 	var jumpOffset = jumpEndIndex - jumpStartIndex;
 
 	// Add jump offset to jump table.
-	cg.jumpTable.table[jump].address = jumpOffset;
-
-	// Unconditional jump back to the start of the while loop.
-	var unconditionalJump = makeFalse();
-
-	jumpOffset = 256 - addIndex;
-
-	cg.jumpTable.table[unconditionalJump].address = jumpOffset.toString(16).toUpperCase();
+	cg.jumpTable.table[jump].address = jumpOffset.toString(16).toUpperCase();
 
 
+	if(flag){
+		// Unconditional jump back to the start of the while loop.
+		var unconditionalJump = makeFalse();
+
+		jumpOffset = 256 - addIndex;
+
+		cg.jumpTable.table[unconditionalJump].address = jumpOffset.toString(16).toUpperCase();
+	}
 }
 
 
