@@ -185,20 +185,121 @@ cg.toString = function() {
 	return cg.code.join(" ");
 };
 
+// Handle code generation for boolean expressions.
+function boolExpr(bool){
+	// Handle condition.
+	if(bool.name == "equality"){
+
+		if(bool.children[0].name == "equality"){
+			bool.children[0].name = handleEquality(bool.children[0]);
+		}
+
+		if(bool.children[1].name == "equality"){
+			bool.children[1].name = handleEquality(bool.children[1]);
+		}
+
+		jump = equality(bool);
+	} else if(bool.name == "true"){
+		jump = makeTrue();
+	} else if (bool.name == "false"){
+		jump = makeFalse();
+	}
+
+	return jump;
+}
+
+function handleEquality(node){
+
+	var retVal = "";
+	var valOne = node.children[0];
+	var valTwo = node.children[1];
+	var compareOne = "";
+	var compareTwo = "";
+
+
+	if(valOne.name == "equality"){
+		valOne.name = handleEquality(valOne);
+	}
+
+	if(valTwo.name == "equality"){
+		valTwo.name = handleEquality(valTwo);
+	}
+
+	if(valOne.name.toUpperCase() == "TRUE" || valOne.name.toUpperCase() == "FALSE" ){
+		if(valOne.name.toUpperCase() == "TRUE"){
+			valOne.name = "1";
+		} else{
+			valOne.name = "0";
+		}
+	}
+
+	if(valTwo.name.toUpperCase() == "TRUE" || valTwo.name.toUpperCase() == "FALSE" ){
+		if(valTwo.name.toUpperCase() == "TRUE"){
+			valTwo.name = "1";
+		} else{
+			valTwo.name = "0";
+		}
+	}
+
+	if(isChar(valOne.name) && isChar(valTwo.name)){ // Two variables.
+
+		compareOne = symbolTableLookUp(valOne.name, scopes[scopes.length - 1].scope).value;
+
+		compareTwo = symbolTableLookUp(valOne.name, scopes[scopes.length - 1].scope).value;
+
+		if(compareOne == compareTwo){ // TRUE
+			retVal = "1";
+		}else // FALSE
+		{
+			retVal = "0";
+		}
+
+	}else if( (isChar(valOne.name) && isDigit(valTwo.name)) || (isDigit(valOne.name) && isChar(valTwo.name)) ){ // A variable and a digit.
+
+		if(isChar(valOne.name)){ // First is a variable.
+
+			compareOne = symbolTableLookUp(valOne.name, scopes[scopes.length - 1].scope).value;
+
+		}else{ // Second is a variable.
+			compareOne = symbolTableLookUp(valTwo.name, scopes[scopes.length - 1].scope).value;
+		}
+
+		if(isDigit(valOne.name)){
+			compareTwo = valOne.name;
+		}else{
+			compareTwo = valTwo.name;
+		}
+
+		if(compareOne == compareTwo){ // TRUE
+			retVal = "1";
+		}else // FALSE
+		{
+			retVal = "0";
+		}
+
+	}else if(isDigit(valOne.name) && isDigit(valTwo.name)){ // Two digits.
+
+		if(valOne.name == valTwo.name){ // TRUE
+			retVal = "1";
+		}else // FALSE
+		{
+			retVal = "0";
+		}
+
+	}else{
+
+	}
+
+	return retVal;
+}
 
 function if_statement(node){
 	var jump = "";
 
 	var bool = node.children[0];
 
-	// Handle condition.
-	if(bool.name == "equality"){
-		jump = equality(node.children[0]);
-	} else if(bool.name == "true"){
-		jump = makeTrue();
-	} else if (bool.name == "false"){
-		jump = makeFalse();
-	}
+	// Handle boolean expression.
+	jump = boolExpr(bool);
 
 	var ifBlock = node.children[1];
 
