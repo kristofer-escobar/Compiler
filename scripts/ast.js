@@ -78,7 +78,7 @@ a.build = function() {
 
         }else{
 
-	        // Create nodes for VarDecl
+			// Create nodes for VarDecl
 			if(node.name == "VarDecl"){
 				varDecl(node);
 				return;
@@ -165,12 +165,33 @@ function whileLoop(node){
 	// Handle the statement list inside the while loop.
 	var stmtLst = node.children[3];
 
+	// Add block for statement list.
+	a.addBranchNode("block");
+
+	// Check if the statement list has a statement.
+	if(stmtLst.children[0]){
+
+		// Handle while statement.
+		whileStatement(stmtLst);
+
+	} // End if
+
+	// End block branch.
+	a.endChildren();
+
+	// End while branch.
+	a.endChildren();
+
+} // End whileLoop function.
+
+function whileStatement(stmtLst){
+
 	var stmt = stmtLst.children[0];
 
 	var expr = stmt.children[0];
 
 	if(expr.name == "Print"){ // Tested.
-		//debugger;
+
 		print(expr.children[2]);
 	} else if (expr.name == "Statement"){
 		// Handle nested statements inside a while loop.
@@ -190,9 +211,19 @@ function whileLoop(node){
 		// Unknown expression.
 	}
 
-	a.endChildren();
+	// Check for another statement list.
+	if(stmtLst.children[1]){
 
-}
+		var innerStmtLst = stmtLst.children[1];
+
+		// Check for another statment.
+		if(innerStmtLst.children[0]){
+			whileStatement(innerStmtLst);
+		} // end if
+	} // end if
+
+} // End whileStatement function.
+
 
 function ifStatement(node){
 	a.addBranchNode("if");
