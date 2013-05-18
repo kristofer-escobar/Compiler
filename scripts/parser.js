@@ -321,7 +321,7 @@ function parseStatementList(){
 } // End parseStatementList
 
 function parsePrint(){
-	debugger;
+
 	if(verboseMode){
 		putMessage("Adding Print branch to parse tree.");
 	}

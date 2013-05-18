@@ -591,6 +591,11 @@ function declare(node){
 // Function to handle code generation for the assignments.
 function assign(node){
 
+	var valOne = node.children[0];
+
+	var valTwo = node.children[1];
+
+
 	// Get the value to be assigned.
 	var tempVal = node.children[1].name;
 
@@ -621,6 +626,22 @@ function assign(node){
 			addCode("A9 " + "00");
 		}
 
+	} else if(tempVal == "+" || tempVal == "-"){ // Handle addition and subtraction.
+
+		if(tempVal == "+"){
+			tempVal = handleAddition(node.children[1]);
+		} else{
+			tempVal = handleSubtraction(node.children[1]);
+		}
+
+		// If the value is a single digit prepend a zero.
+		if(tempVal.toString().length == 1){
+
+			tempVal = "0" + tempVal;
+		}
+
+		// Load the accumulator with the digit value.
+		addCode("A9 " + tempVal);
 	} else{
 
 		// Put string at the end of the memory.
@@ -633,8 +654,106 @@ function assign(node){
 	// Store the accumulator in memory.
 	addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
+	var variable = JSON.parse(symbolTable[valOne.name + scopes[scopes.length - 1].scope]);
+
+	variable.value = tempVal;
+
+	symbolTable[valOne.name + scopes[scopes.length - 1].scope] = JSON.stringify(variable);
+
 }
 
+
+function handleAddition(node){
+
+	var value = "0";
+	var valOne = node.children[0];
+	var valTwo = node.children[1];
+
+	if(valOne.name == "+" || valOne.name == "-" ){
+		if(valOne.name == "+"){
+			valOne.name = handleAddition(valOne);
+		}else{
+			valOne.name = handleSubtraction(valOne);
+		}
+	}
+
+	if(valTwo.name == "+" || valTwo.name == "-" ){
+		if(valTwo.name == "+"){
+			valTwo.name = handleAddition(valTwo);
+		}else{
+			valTwo.name = handleSubtraction(valTwo);
+		}
+	}
+
+	if( isDigit(valOne.name) && isDigit(valTwo.name) ){ // Two digits.
+		value = parseInt(valOne.name, 10) + parseInt(valTwo.name, 10);
+	}else if( isDigit(valOne.name) && isChar(valTwo.name) ){ // digit and variable.
+
+		// Get the variable value from the symbol table.
+		var variable = symbolTableLookUp(valTwo.name, scopes[scopes.length - 1].scope);
+
+		var variableValue = variable.value;
+
+		if(variable.type == "int"){
+			value = parseInt(valOne.name, 10) + parseInt(variableValue, 10);
+		}else{
+			value = parseInt(valOne.name, 10) + variableValue;
+		}
+
+	}else if( isDigit(valOne.name) && (valTwo.name.toUpperCase() == "TRUE" || valTwo.name.toUpperCase() == "FALSE") ){ // digit and boolean.
+		value = parseInt(valOne.name, 10) + valTwo.name;
+	}else if( isDigit(valOne.name) && isCharList(valTwo.name) ){ // digit and string.
+		value = parseInt(valOne.name, 10) + valTwo.name;
+	}
+
+	return value;
+}
+
+function handleSubtraction(node){
+debugger;
+	var value = "0";
+	var valOne = node.children[0];
+	var valTwo = node.children[1];
+
+	if(valOne.name == "+" || valOne.name == "-" ){
+		if(valOne.name == "+"){
+			valOne.name = handleAddition(valOne);
+		}else{
+			valOne.name = handleSubtraction(valOne);
+		}
+	}
+
+	if(valTwo.name == "+" || valTwo.name == "-" ){
+		if(valTwo.name == "+"){
+			valTwo.name = handleAddition(valTwo);
+		}else{
+			valTwo.name = handleSubtraction(valTwo);
+		}
+	}
+
+	if( isDigit(valOne.name) && isDigit(valTwo.name) ){ // Two digits.
+		value = parseInt(valOne.name, 10) - parseInt(valTwo.name, 10);
+	}else if( isDigit(valOne.name) && isChar(valTwo.name) ){ // digit and variable.
+
+		// Get the variable value from the symbol table.
+		var variable = symbolTableLookUp(valTwo.name, scopes[scopes.length - 1].scope);
+
+		var variableValue = variable.value;
+
+		if(variable.type == "int"){
+			value = parseInt(valOne.name, 10) - parseInt(variableValue, 10);
+		}else{
+			value = parseInt(valOne.name, 10) - variableValue;
+		}
+
+	}else if( isDigit(valOne.name) && (valTwo.name.toUpperCase() == "TRUE" || valTwo.name.toUpperCase() == "FALSE") ){ // digit and boolean.
+		value = parseInt(valOne.name, 10) - valTwo.name;
+	}else if( isDigit(valOne.name) && isCharList(valTwo.name) ){ // digit and string.
+		value = parseInt(valOne.name, 10) - valTwo.name;
+	}
+
+	return value;
+}
 
 function printInt(node){
 var retVal = "";
@@ -650,7 +769,7 @@ var retVal = "";
 
 // Function to handle code generation for prints.
 function print(node){
-debugger;
+
 if(node.children[0]){
 
 	if(node.children[0].name == "+"){
