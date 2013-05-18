@@ -331,6 +331,9 @@ function if_statement(node){
 
 // Handle code generation for while loops.
 function whileLoop(node){
+
+	var whileLoopStartIndex = addIndex;
+
 	var jump = "";
 
 	var bool = node.children[0];
@@ -359,6 +362,15 @@ function whileLoop(node){
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
+
+	// Unconditional jump back to the start of the while loop.
+	var unconditionalJump = makeFalse();
+
+	jumpOffset = 256 - addIndex;
+
+	cg.jumpTable.table[unconditionalJump].address = jumpOffset.toString(16).toUpperCase();
+
+
 }
 
 
