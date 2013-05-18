@@ -309,7 +309,7 @@ function if_statement(node){
 
 	// Check if there is a statement in the if block.
 	if(ifBlock.children[0]){
-debugger;
+
 		// Handle if body.
 		ifBody(ifBlock, 0);
 
@@ -327,11 +327,38 @@ debugger;
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
 
-}
+} // Enf IF
 
 // Handle code generation for while loops.
 function whileLoop(node){
+	var jump = "";
 
+	var bool = node.children[0];
+
+	// Handle boolean expression.
+	jump = boolExpr(bool);
+
+	var whileBlock = node.children[1];
+
+	// Check if there is a statement in the while block.
+	if(whileBlock.children[0]){
+
+		// Handle if body.
+		whileBody(whileBlock, 0);
+
+	} // End check for statement.
+
+	// Calculate jump offset.
+	var codeArray = cg.code;
+
+	var jumpStartIndex = codeArray.indexOf(jump);
+
+	var jumpEndIndex = addIndex -1;
+
+	var jumpOffset = jumpEndIndex - jumpStartIndex;
+
+	// Add jump offset to jump table.
+	cg.jumpTable.table[jump].address = jumpOffset;
 }
 
 
@@ -366,7 +393,33 @@ function ifBody(ifBlock, index){
 
 } // End ifBody
 
-function whileBody(node){
+function whileBody(whileBlock, index){
+	if(whileBlock.children[0]){
+		var expr = whileBlock.children[index];
+
+		// Handle expression.
+		if(expr.name == "declare"){
+			declare(expr);
+		} else if(expr.name == "assign"){
+			assign(expr);
+		} else if(expr.name == "print"){
+			print(expr);
+		}else if(expr.name == "if"){
+			if_statement(expr);
+		}else if(expr.name == "while"){
+			whileLoop(expr);
+		}else{
+
+		} // End handle expression
+
+		if(index === 0){
+			for(var i = 1; i < whileBlock.children.length; i++){
+				ifBody(whileBlock, i);
+			}
+		}
+
+
+	} // End check for children.
 
 }
 
@@ -704,7 +757,7 @@ if(node.children[0]){
 		putString(firstChild.name);
 
 		// Load the accumulator with the stating index of the string.
-		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
+		//addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
 
 		// Store the accumulator in memory.
 		//addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
