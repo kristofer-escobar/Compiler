@@ -148,7 +148,8 @@ cg.generate = function() {
 		}
 
 		if(node.name == "while"){
-			addCode("while");
+			whileLoop(node);
+			return;
 		}
 
 		if(node.name == "if"){
@@ -187,6 +188,9 @@ cg.toString = function() {
 
 // Handle code generation for boolean expressions.
 function boolExpr(bool){
+
+	var jump = "";
+
 	// Handle condition.
 	if(bool.name == "equality"){
 
@@ -305,22 +309,11 @@ function if_statement(node){
 
 	// Check if there is a statement in the if block.
 	if(ifBlock.children[0]){
-
-		var expr = ifBlock.children[0];
-
-		// Handle expression.
-		if(expr.name == "declare"){
-			declare(expr);
-		} else if(expr.name == "assign"){
-			assign(expr);
-		} else if(expr.name == "print"){
-			print(expr);
-		}else{
-
-		} // End handle expression
+debugger;
+		// Handle if body.
+		ifBody(ifBlock, 0);
 
 	} // End check for statement.
-
 
 	// Calculate jump offset.
 	var codeArray = cg.code;
@@ -333,6 +326,47 @@ function if_statement(node){
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset;
+
+}
+
+// Handle code generation for while loops.
+function whileLoop(node){
+
+}
+
+
+function ifBody(ifBlock, index){
+
+	if(ifBlock.children[0]){
+		var expr = ifBlock.children[index];
+
+		// Handle expression.
+		if(expr.name == "declare"){
+			declare(expr);
+		} else if(expr.name == "assign"){
+			assign(expr);
+		} else if(expr.name == "print"){
+			print(expr);
+		}else if(expr.name == "if"){
+			if_statement(expr);
+		}else if(expr.name == "while"){
+			whileLoop(expr);
+		}else{
+
+		} // End handle expression
+
+		if(index === 0){
+			for(var i = 1; i < ifBlock.children.length; i++){
+				ifBody(ifBlock, i);
+			}
+		}
+
+
+	} // End check for children.
+
+} // End ifBody
+
+function whileBody(node){
 
 }
 
