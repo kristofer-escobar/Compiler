@@ -52,7 +52,7 @@ function Lexer(){
             for(var characterPosition = 0; characterPosition < LineEndPosition; characterPosition++){
                 // Store the current working characterPosition.
                 var currentCharacter = currentLine[characterPosition];
-
+debugger;
                 //Check for a delimiter. (Whitespace, last chatacter, and eof symbol)
                 if((REGEX_SPACE.test(currentCharacter) || characterPosition == (currentLine.length - 1) || currentCharacter == EOF) && !inCharList){
                     if(currentCharacter == EOF){ // Reached end of file.
@@ -251,7 +251,7 @@ function Lexer(){
                     if((characterPosition + 1) < currentLine.length){
                         var nextCharacter = currentLine[characterPosition + 1];
                         var prevCharacter = currentLine[characterPosition - 1];
-                        if(((!isChar(nextCharacter) && !isChar(prevCharacter)) || isTerminal(nextCharacter)) && ((characterPosition - lexemeStartPosition) <= 1)) {
+                        if(  (!isChar(nextCharacter) && !isChar(prevCharacter)) || (!isChar(prevCharacter) && isTerminal(nextCharacter) && ((characterPosition - lexemeStartPosition) <= 1)) ) {
                             // Found a characer.
                             tokenize(TOKEN_IDENTIFIER,linePosition,characterPosition,currentCharacter, this.tokenStream);
                             lexemeStartPosition = lexemeStartPosition + 1;
