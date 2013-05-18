@@ -191,21 +191,28 @@ function whileStatement(stmtLst){
 	var expr = stmt.children[0];
 
 	if(expr.name == "Print"){ // Tested.
-
 		print(expr.children[2]);
-	} else if (expr.name == "Statement"){
+	} else if (expr.name == "Id"){
 		// Handle nested statements inside a while loop.
-		if(expr.children[1]){
-			if(expr.children[1].name == "="){
-				assign(expr);
+		if(stmt.children[1]){
+			if(stmt.children[1].name == "="){
+				assign(stmt);
 			}
 		}
 	} else if(expr.name == "VarDecl"){ //Tested
 		varDecl(expr);
-	} else if(expr.name == "WhileLoop"){
+	} else if(expr.name == "WhileLoop"){// Tested
 		whileLoop(expr);
 	} else if(expr.name == "IfStatement"){
 		ifStatement(expr);
+	} else if(expr.name == "{"){ // Statement
+		if(stmt.children[1]){
+			if(stmt.children[1].name == "StatementList"){
+				a.addBranchNode("block");
+				whileStatement(stmt.children[1]);
+				a.endChildren();
+			}
+		}
 	} else
 	{
 		// Unknown expression.
