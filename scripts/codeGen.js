@@ -189,25 +189,36 @@ cg.toString = function() {
 function if_statement(node){
 	var jump = "";
 
+	var bool = node.children[0];
+
 	// Handle condition.
-	if(node.children[0].name == "equality"){
+	if(bool.name == "equality"){
 		jump = equality(node.children[0]);
-	} else if(node.children[0].name == "true"){
+	} else if(bool.name == "true"){
 		jump = makeTrue();
-	} else if (node.children[0].name == "false"){
+	} else if (bool.name == "false"){
 		jump = makeFalse();
 	}
 
-	// Handle expression.
-	if(node.children[1].name == "declare"){
-		declare(node.children[1]);
-	} else if(node.children[1].name == "assign"){
-		assign(node.children[1]);
-	} else if(node.children[1].name == "print"){
-		print(node.children[1]);
-	}else{
+	var ifBlock = node.children[1];
 
-	}
+	// Check if there is a statement in the if block.
+	if(ifBlock.children[0]){
+
+		var expr = ifBlock.children[0];
+
+		// Handle expression.
+		if(expr.name == "declare"){
+			declare(expr);
+		} else if(expr.name == "assign"){
+			assign(expr);
+		} else if(expr.name == "print"){
+			print(expr);
+		}else{
+
+		} // End handle expression
+
+	} // End check for statement.
 
 
 	// Calculate jump offset.
@@ -243,28 +254,102 @@ function makeFalse(){
 function equality(node){
 	if(node.parent.name == "if"){
 
+		var valueOne = node.children[0];
+
+		var valueTwo = node.children[1];
+
+		var tempValue = "";
+
+		// TREAT BOOLEAN VALUES AS DIGITS.
+
+		if(valueOne.name.toUpperCase() == "TRUE" || valueOne.name.toUpperCase() == "FALSE"){
+			if(valueOne.name.toUpperCase() == "TRUE"){
+				valueOne.name = "1";
+			}else{
+				valueOne.name = "0";
+			}
+		}
+
+		if(valueTwo.name.toUpperCase() == "TRUE" || valueTwo.name.toUpperCase() == "FALSE"){
+			if(valueTwo.name.toUpperCase() == "TRUE"){
+				valueTwo.name = "1";
+			}else{
+				valueTwo.name = "0";
+			}
+		}
+
 		// Compare a variable to another variable.
-		if(isChar(node.children[0].name) && isChar(node.children[1].name)){
+		if(isChar(valueOne.name) && isChar(valueTwo.name)){
 
 			// Load the X-register from memory.
 			addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
 
 			// Compare memory to the X-register, set z-flag if equal.
 			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
-		} else if(isChar(node.children[0].name) && isDigit(node.children[1].name)){
 
-			var tempValue = "";
+		} else if( (isChar(valueOne.name) && isDigit(valueTwo.name)) || (isDigit(valueOne.name) && isChar(valueTwo.name)) ) { // Compare a variable to a digit or digit to variable.
 
-			if(node.children[1].name.toString().length == 1){
+			if(isDigit(valueOne.name)){ // First value is a digit.
+				tempValue = valueOne.name.toString();
+			}else{ // Second value is a digit.
+				tempValue = valueTwo.name.toString();
+			}
 
-				tempValue = "0" + node.children[1].name;
+			// Check if value has two bytes.
+			if(tempValue.length == 1){
+				tempValue = "0" + tempValue;
 			}
 
 			// Load the X-register from memory.
 			addCode("A2 " + tempValue);
 
+			if(isChar(valueOne.name)){ // First value is a variable.
+				// Compare memory to the X-register, set z-flag if equal.
+				addCode("EC " + cg.staticTable.table[valueOne.name + scopes[scopes.length - 1].scope].temp);
+			}else{ // Second value is a variable.
+				// Compare memory to the X-register, set z-flag if equal.
+				addCode("EC " + cg.staticTable.table[valueTwo.name + scopes[scopes.length - 1].scope].temp);
+			}
+
+		} else{ // Both values to compare are digits.
+
+			// HANDLE THE FIRST DIGIT.
+
+			tempValue = valueOne.name.toString();
+
+			// Check if value has two bytes.
+			if(tempValue.length == 1){
+				tempValue = "0" + tempValue;
+			}
+
+			// Load the X-register from memory.
+			addCode("A2 " + tempValue);
+
+			//HANDLE THE SECOND DIGIT.
+
+			tempValue = valueTwo.name.toString();
+
+			// Check if value has two bytes.
+			if(tempValue.length == 1){
+				tempValue = "0" + tempValue;
+			}
+
+			// Store the value of the second digit in the heap.
+			cg.code[endIndex] = tempValue;
+
+			// Get the value where it was stored.
+			var secondDigitLocation = endIndex.toString(16).toUpperCase();
+
+			// Move the heap index up.
+			endIndex--;
+
+			// Make sure the memory location is two bytes.
+			if(secondDigitLocation.length ==1){
+				secondDigitLocation = "0" + secondDigitLocation;
+			}
+
 			// Compare memory to the X-register, set z-flag if equal.
-			addCode("EC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+			addCode("EC " + secondDigitLocation + " 00");
 		}
 
 		// Add entry into the static table.
