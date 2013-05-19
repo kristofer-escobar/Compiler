@@ -148,12 +148,30 @@ cg.generate = function() {
 		}
 
 		if(node.name == "while"){
+			scopeLevel++;
+
+			var scopeObj = { scope: scopeLevel,
+							depth: depth };
+
+			scopes.push(scopeObj);
+
 			whileLoop(node);
+
+			scopes.pop();
 			return;
 		}
 
 		if(node.name == "if"){
+			scopeLevel++;
+
+			var scopeObj = { scope: scopeLevel,
+							depth: depth };
+
+			scopes.push(scopeObj);
+
 			if_statement(node);
+
+			scopes.pop();
 			return;
 		}
 
@@ -331,7 +349,7 @@ function if_statement(node){
 
 // Handle code generation for while loops.
 function whileLoop(node){
-
+debugger;
 	var whileLoopStartIndex = addIndex;
 
 	var jump = "";
@@ -357,6 +375,15 @@ function whileLoop(node){
 
 	} // End check for statement.
 
+	if(flag){
+		// Unconditional jump back to the start of the while loop.
+		var unconditionalJump = makeFalse();
+
+		var unconditionalOffset = (256 - addIndex) + whileLoopStartIndex;
+
+		cg.jumpTable.table[unconditionalJump].address = unconditionalOffset.toString(16).toUpperCase();
+	}
+
 	// Calculate jump offset.
 	var codeArray = cg.code;
 
@@ -368,16 +395,6 @@ function whileLoop(node){
 
 	// Add jump offset to jump table.
 	cg.jumpTable.table[jump].address = jumpOffset.toString(16).toUpperCase();
-
-
-	if(flag){
-		// Unconditional jump back to the start of the while loop.
-		var unconditionalJump = makeFalse();
-
-		jumpOffset = 256 - addIndex;
-
-		cg.jumpTable.table[unconditionalJump].address = jumpOffset.toString(16).toUpperCase();
-	}
 }
 
 
@@ -459,7 +476,6 @@ function makeFalse(){
 }
 
 function equality(node){
-	if(node.parent.name == "if"){
 
 		var valueOne = node.children[0];
 
@@ -566,7 +582,6 @@ function equality(node){
 		addCode("D0 " + jump);
 
 		return jump;
-	}
 
 }
 
@@ -641,7 +656,16 @@ function assign(node){
 		}
 
 		// Load the accumulator with the digit value.
-		addCode("A9 " + tempVal);
+		addCode("A9 " + tempVal);// load the value
+
+		addCode("8D " + endIndex.toString(16).toUpperCase() + " 00"); // store value.
+
+		addCode("AD " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp); // load variable value
+
+		addCode("6D " + endIndex.toString(16).toUpperCase() + " 00"); // Add the value to the new value.
+
+		endIndex--;
+
 	} else{
 
 		// Put string at the end of the memory.
@@ -653,7 +677,7 @@ function assign(node){
 
 	// Store the accumulator in memory.
 	addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
-
+//debugger;
 	var variable = JSON.parse(symbolTable[valOne.name + scopes[scopes.length - 1].scope]);
 
 	variable.value = tempVal;
@@ -710,7 +734,7 @@ function handleAddition(node){
 }
 
 function handleSubtraction(node){
-debugger;
+//debugger;
 	var value = "0";
 	var valOne = node.children[0];
 	var valTwo = node.children[1];
@@ -841,8 +865,24 @@ if(node.children[0]){
 
 		// Check what type to print.
 		if(isChar(firstChild.name)){ // Its a character. (variable.)
+//debugger;
+			var tempVal ="";
+
+			var startScope = scopes.length - 1;
+
+			while(!cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+
+				startScope = startScope - 1;
+				if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+					tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+				}
+
+			}
+
 			// Load the Y-register from memory.
-			addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+			//addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+
+			addCode("AC " + tempVal);
 
 			var temp = symbolTableLookUp(node.children[0].name , scopes[scopes.length - 1].scope);
 
