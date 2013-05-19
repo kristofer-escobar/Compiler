@@ -7,30 +7,38 @@
     <link rel="stylesheet" type="text/css" href="compiler.css" />
 </head>
 <body onload="init();">
-    <span class="center"><h1><i class="whiteText">Kris' Compiler Project</i></h1></span>
+    <span class="center"><h1><i class="whiteText">Kris's Compiler Project</i></h1></span>
     <div class="whiteText">
         <div>Program<span class="indent">::== Statement $</span></div>
         <div>Statement<span class="indent">::== print ( Expr )</span></div>
         <div><span class="indent"> ::== Id = Expr </span></div>
         <div><span class="indent"> ::== VarDecl </span></div>
         <div><span class="indent">::== { StatementList } </span></div>
+        <div><span class="indent">::== WhileStatement </span></div>
+        <div><span class="indent">::== IfStatement </span></div>
+        <div>WhileStatement<span class="indent">::== while BooleanExpr { StatementList } </span></div>
+        <div>IfStatement<span class="indent">::== if BooleanExpr { StatementList } </span></div>
         <div>StatementList<span class="indent">::== Statement StatementList </span></div>
         <div><span class="indent">::== ε </span></div>
         <div>Expr<span class="indent">::== IntExpr </span></div>
         <div><span class="indent">::== StringExpr </span></div>
+        <div><span class="indent">::== BooleanExpr </span></div>
         <div><span class="indent">::== Id </span></div>
         <div>IntExpr<span class="indent">::== digit op Expr </span></div>
         <div><span class="indent">::== digit </span></div>
         <div>StringExpr<span class="indent">::== " CharList " </span></div>
+        <div>BooleanExpr<span class="indent">::== ( Expr == Expr ) </span></div>
+        <div><span class="indent">::== boolVal </span></div>
         <div>CharExpr<span class="indent">::== Char CharList </span></div>
         <div><span class="indent">::== Space CharList </span></div>
         <div><span class="indent">::== ε </span></div>
         <div>VarDecl<span class="indent">::== Type Id </span></div>
-        <div>Type<span class="indent">::== int | string </span></div>
+        <div>Type<span class="indent">::== int | string | boolean </span></div>
         <div>Id<span class="indent">::== Char </span></div>
         <div>Char<span class="indent">::== a | b | c ... z </span></div>
         <div>Space<span class="indent">::== the <i>space</i> character </span></div>
         <div>digit<span class="indent">::== 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 </span></div>
+        <div>boolVal<span class="indent">::== false | true </span></div>
         <div>op<span class="indent">::== + | - </span></div>
     </div>  
     <div class="buttons">
