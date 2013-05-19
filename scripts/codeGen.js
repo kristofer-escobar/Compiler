@@ -865,19 +865,23 @@ if(node.children[0]){
 
 		// Check what type to print.
 		if(isChar(firstChild.name)){ // Its a character. (variable.)
-//debugger;
+debugger;
 			var tempVal ="";
 
 			var startScope = scopes.length - 1;
 
-			while(!cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+			if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+				tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+			}else{
+				while(!cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
 
-				startScope = startScope - 1;
-				if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
-					tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+					startScope = startScope - 1;
+					if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+						tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+					}
+
 				}
-
-			}
+			} // end else.
 
 			// Load the Y-register from memory.
 			//addCode("AC " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
