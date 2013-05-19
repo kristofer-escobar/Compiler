@@ -349,7 +349,7 @@ function if_statement(node){
 
 // Handle code generation for while loops.
 function whileLoop(node){
-debugger;
+//debugger;
 	var whileLoopStartIndex = addIndex;
 
 	var jump = "";
@@ -504,11 +504,46 @@ function equality(node){
 		// Compare a variable to another variable.
 		if(isChar(valueOne.name) && isChar(valueTwo.name)){
 
+			var tempVal ="";
+
+			var startScope = scopes.length - 1;
+
+			if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+				tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+			}else{
+				while(!cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+
+					startScope = startScope - 1;
+					if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+						tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+					}
+
+				}
+			} // end else.
+
 			// Load the X-register from memory.
-			addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+			//addCode("AE " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+			addCode("AE " + tempVal);
+
+			tempVal ="";
+
+			startScope = scopes.length - 1;
+
+			if(cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+				tempVal = cg.staticTable.table[node.children[1].name + scopes[startScope].scope].temp;
+			}else{
+				while(!cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+
+					startScope = startScope - 1;
+					if(cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+						tempVal = cg.staticTable.table[node.children[1].name + scopes[startScope].scope].temp;
+					}
+
+				}
+			} // end else.
 
 			// Compare memory to the X-register, set z-flag if equal.
-			addCode("EC " + cg.staticTable.table[node.children[1].name + scopes[scopes.length - 1].scope].temp);
+			addCode("EC " + tempVal);
 
 		} else if( (isChar(valueOne.name) && isDigit(valueTwo.name)) || (isDigit(valueOne.name) && isChar(valueTwo.name)) ) { // Compare a variable to a digit or digit to variable.
 
@@ -527,11 +562,54 @@ function equality(node){
 			addCode("A2 " + tempValue);
 
 			if(isChar(valueOne.name)){ // First value is a variable.
+
+				var tempVal ="";
+
+				var startScope = scopes.length - 1;
+
+				if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+					tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+				}else{
+					while(!cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+
+						startScope = startScope - 1;
+						if(cg.staticTable.table[node.children[0].name + scopes[startScope].scope]){
+							tempVal = cg.staticTable.table[node.children[0].name + scopes[startScope].scope].temp;
+						}
+
+					}
+				} // end else.
+
 				// Compare memory to the X-register, set z-flag if equal.
-				addCode("EC " + cg.staticTable.table[valueOne.name + scopes[scopes.length - 1].scope].temp);
+				//addCode("EC " + cg.staticTable.table[valueOne.name + scopes[scopes.length - 1].scope].temp);
+				addCode("EC " + tempVal);
+
+
 			}else{ // Second value is a variable.
+
+			var tempVal ="";
+
+			var startScope = scopes.length - 1;
+
+			if(cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+				tempVal = cg.staticTable.table[node.children[1].name + scopes[startScope].scope].temp;
+			}else{
+				while(!cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+
+					startScope = startScope - 1;
+					if(cg.staticTable.table[node.children[1].name + scopes[startScope].scope]){
+						tempVal = cg.staticTable.table[node.children[1].name + scopes[startScope].scope].temp;
+					}
+
+				}
+			} // end else.
+
+
 				// Compare memory to the X-register, set z-flag if equal.
-				addCode("EC " + cg.staticTable.table[valueTwo.name + scopes[scopes.length - 1].scope].temp);
+				//addCode("EC " + cg.staticTable.table[valueTwo.name + scopes[scopes.length - 1].scope].temp);
+				addCode("EC " + tempVal);
+
+
 			}
 
 		} else{ // Both values to compare are digits.
@@ -655,16 +733,24 @@ function assign(node){
 			tempVal = "0" + tempVal;
 		}
 
-		// Load the accumulator with the digit value.
-		addCode("A9 " + tempVal);// load the value
+		// Added
+		if(isChar(valTwo.children[1].name)){
 
-		addCode("8D " + endIndex.toString(16).toUpperCase() + " 00"); // store value.
+			// Load the accumulator with the digit value.
+			addCode("A9 " + tempVal);// load the value
 
-		addCode("AD " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp); // load variable value
+			addCode("8D " + endIndex.toString(16).toUpperCase() + " 00"); // store value.
 
-		addCode("6D " + endIndex.toString(16).toUpperCase() + " 00"); // Add the value to the new value.
+			var tempVal2 = findStaticValue(node.children[0].name);
 
-		endIndex--;
+			//addCode("AD " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp); // load variable value
+			addCode("AD " + tempVal2.temp);
+
+			addCode("6D " + endIndex.toString(16).toUpperCase() + " 00"); // Add the value to the new value.
+
+			endIndex--;
+		}
+
 
 	} else{
 
@@ -675,16 +761,73 @@ function assign(node){
 		addCode("A9 " + (endIndex + 1).toString(16).toUpperCase());
 	}
 
+
+	var tempVal2 = findStaticValue(node.children[0].name);
+
 	// Store the accumulator in memory.
-	addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
-//debugger;
-	var variable = JSON.parse(symbolTable[valOne.name + scopes[scopes.length - 1].scope]);
+	//addCode("8D " + cg.staticTable.table[node.children[0].name + scopes[scopes.length - 1].scope].temp);
+	addCode("8D " + tempVal2.temp);
 
-	variable.value = tempVal;
 
-	symbolTable[valOne.name + scopes[scopes.length - 1].scope] = JSON.stringify(variable);
+
+
+// var variable = JSON.parse(symbolTable[valOne.name + scopes[scopes.length - 1].scope]);
+var variable = findSymbolTableEntry(valOne.name);
+
+variable.value = tempVal;
+
+// symbolTable[valOne.name + scopes[scopes.length - 1].scope] = JSON.stringify(variable);
+symbolTable[valOne.name + variable.scope] = JSON.stringify(variable);
 
 }
+
+function findSymbolTableEntry(variable){
+
+	var startScope = scopes.length - 1;
+
+	var scopeValue = "";
+
+
+	if(symbolTable[variable + scopes[startScope].scope]){
+
+	return JSON.parse(symbolTable[variable + scopes[startScope].scope]);
+
+	}else{
+
+		while(!symbolTable[variable + scopes[startScope].scope]){
+
+			startScope = startScope - 1;
+			if(symbolTable[variable + scopes[startScope].scope]){
+				return JSON.parse(symbolTable[variable + scopes[startScope].scope]);
+			}
+
+		}
+	}
+}
+
+
+function findStaticValue(variable){
+
+	var startScope = scopes.length - 1;
+
+	var scopeValue = "";
+
+	if(cg.staticTable.table[variable + scopes[startScope].scope]){
+		scopeValue = cg.staticTable.table[variable + scopes[startScope].scope];
+	}else{
+		while(!cg.staticTable.table[variable + scopes[startScope].scope]){
+
+			startScope = startScope - 1;
+			if(cg.staticTable.table[variable + scopes[startScope].scope]){
+				scopeValue = cg.staticTable.table[variable + scopes[startScope].scope];
+			}
+
+		}
+	} // end else.	
+
+	return scopeValue;
+}
+
 
 
 function handleAddition(node){
@@ -865,7 +1008,7 @@ if(node.children[0]){
 
 		// Check what type to print.
 		if(isChar(firstChild.name)){ // Its a character. (variable.)
-debugger;
+
 			var tempVal ="";
 
 			var startScope = scopes.length - 1;
